@@ -1,7 +1,7 @@
-#Week 1
-[Time report](~/documentation/Time\ report.md)
+# Week 1
+[Time report](~/documentation/Time report.md)
 
-##Progress report
+## Progress report
 
 This week's focus has been on reading through the course material, setting up
 the project and repos, creating documentation and so on. Very few technical
@@ -18,6 +18,6 @@ I chose to work on compression algorithms. The subject seems interesting.
 Might look up more specialized ones besides Huffman and LZW if the project 
 needs more scope.
 
-##Next week
+## Next week
 Continuing to follow along the suggested schedule: sketching the core program
 using premade data structures, working out tests, Javadoc and so on.
