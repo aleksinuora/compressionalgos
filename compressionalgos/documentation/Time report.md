@@ -1,6 +1,6 @@
-#Time report
+# Time report
 
-##Week 1
+## Week 1
 Date       | hours | target |
 -----------|-------|--------|
 2020-09-03 | 1,5   | Revising course material, git use |
