@@ -8,7 +8,7 @@ Date       | hours | target |
 -"-        | 1     | Setting up git, repos, project files etc. |
 2020-09-04 | 1     | Finishing up initial documentation, reporting |
 
-
+## Week 2
 Date
 -----------| hours | target |
 2020-09-11 | 2     | Deeper dive into Huffman coding |
