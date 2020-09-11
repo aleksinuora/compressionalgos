@@ -1,5 +1,5 @@
 # Week 1
-[Time report](https://github.com/aleksinuora/compressionalgos/compressionalgos/documentation/Time_report.md)
+[Time report](https://github.com/aleksinuora/compressionalgos/blob/master/compressionalgos/documentation/Time%20report.md)
 
 ## Progress report
 

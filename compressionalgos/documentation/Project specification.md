@@ -32,7 +32,11 @@ Space complexities should be in the range of O(n).
 
 ## Sources
 https://en.wikipedia.org/wiki/Huffman_coding
+
 https://en.wikipedia.org/wiki/Lempel%E2%80%93Ziv%E2%80%93Welch
+
 https://stackoverflow.com/questions/6189765/big-o-complexities-of-algorithms-lzw-and-huffman
+
 https://www.studytonight.com/data-structures/huffman-coding
+
 https://sites.google.com/site/datacompressionguide/lzw
