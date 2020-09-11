@@ -9,8 +9,8 @@ Date       | hours | target |
 2020-09-04 | 1     | Finishing up initial documentation, reporting |
 
 ## Week 2
-Date
------------| hours | target |
+Date       | hours | target |
+-----------|-------|--------|
 2020-09-11 | 2     | Deeper dive into Huffman coding |
 -"-        | 1     | Setting up some classes, sketching out file i/o |
 -"-        | 3     | Trying to unit test i/o-class |
