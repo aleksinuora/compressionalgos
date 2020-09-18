@@ -16,3 +16,11 @@ Date       | hours | target |
 -"-        | 3     | Trying to unit test i/o-class |
 -"-        | 1,5   | Configuring and debugging checkstyle |
 -"-        | 0,5   | Documentation |
+
+## Week 3
+Date       | hours | target |
+-----------|-------|--------|
+2020-09-18 | 2     | Basic UI, logic and structure complete |
+-"-        | 6     | Huffman compression implemented with default data structures |
+-"-        | 1     | Worked out problems with Junit |
+-"-        | 1     | Javadoccing, documentation |

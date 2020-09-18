@@ -15,6 +15,7 @@ import org.junit.rules.TemporaryFolder;
 import org.junit.Rule;
 import java.io.*;
 import java.nio.file.*;
+import java.nio.charset.StandardCharsets;
 
 /**
  *
@@ -52,28 +53,30 @@ public class ioTest {
         System.out.println("ReadBytesFromFile");
         final File tempFile = tempFolder.newFile("tempFile.txt");
         String path = tempFile.getPath();
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(tempFile))){
+            bw.write("a");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }        
         Io instance = new Io();
-        Object expResult = null;
-        Object result = instance.ReadBytesFromFile(path);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        int expResult = 97;
+        byte[] result = instance.readBytesFromFile(path);
+        int resValue = result[0];
+        assertEquals(expResult, resValue);
     }
 
     /**
      * Test of WriteObjectToFile method, of class Io.
      */
     @Test
-    public void testWriteObjectToFile() {
-        System.out.println("WriteObjectToFile");
+    public void testWriteByteArrayToFile() {
+        System.out.println("WriteByteArrayToFile");
         String path = tempFolder.getRoot().getPath() + "/test";
-        Object obj = null;
+        byte[] bytes = new byte[0];
         Io instance = new Io();
         boolean expResult = true;
-        boolean result = instance.WriteObjectToFile(path, obj);
+        boolean result = instance.writeByteArrayToFile(path, bytes);
         assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
     
 }
