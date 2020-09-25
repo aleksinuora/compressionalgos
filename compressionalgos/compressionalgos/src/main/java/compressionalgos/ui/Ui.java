@@ -18,11 +18,11 @@ public class Ui {
     static boolean testing = true;
     // -- for testing purposes
     
-     Scanner scanner;
+    Scanner scanner;
     private Logic logic;
     
     /**
-     *
+     * 
      * @param scanner
      * @param logic
      */
@@ -32,23 +32,25 @@ public class Ui {
     }
     
     /**
-     *
+     * Launch user interface
      */
     public void launch() {
-        System.out.println("Source path: ");
-        String source = scanner.next();
-        logic.setSource(source);
-        System.out.println("Available algorithms: (1) Huffman compress");
-        String algoChoice = scanner.next();
-        System.out.println("Output path: ");
-        String output = scanner.next();
-        logic.setOutput(output);
+        
+        // !!! Scanner class currently broken, using hardcoded inputs !!!
+//        System.out.println("Source path: ");
+//        String source = scanner.nextLine();
+//        logic.setSource(source);
+//        System.out.println("Available algorithms: (1) Huffman compress");
+//        String algoChoice = scanner.nextLine();
+//        System.out.println("Output path: ");
+//        String output = scanner.nextLine();
+//        logic.setOutput(output);
         // for testing purposes --
         if (testing) {
             logic.setSource(testSource);
             logic.setOutput(testDest);
         }
         // -- for testing purposes
-        logic.runAlgo(algoChoice);
+        logic.runAlgo("1");
     }
 }

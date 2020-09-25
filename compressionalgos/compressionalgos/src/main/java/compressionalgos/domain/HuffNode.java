@@ -11,12 +11,12 @@ import java.util.Comparator;
  *
  * @author aleksi
  */
-public class HuffNode implements Comparable<HuffNode>{
+public class HuffNode implements java.io.Serializable{
 
     /**
      * Frequency of byte
      */
-    public int freq;
+    public long freq;
 
     /**
      * Byte value
@@ -46,15 +46,5 @@ public class HuffNode implements Comparable<HuffNode>{
         this.value = 127;
         this.left = null;
         this.right = null;
-    }
-    
-    /**
-     * Standard compareTo
-     * @param x
-     * @return frequency of this.node - node x
-     */
-    @Override
-    public int compareTo(HuffNode x) {
-        return this.freq - x.freq;
     }
 }

@@ -12,5 +12,11 @@ import java.io.Serializable;
  * @author aleksi
  */
 public class HuffmanTree implements Serializable{
-    
+        
+    /**
+     *
+     */
+    public HuffmanTree() {
+        
+    }
 }

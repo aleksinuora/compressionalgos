@@ -19,9 +19,9 @@ public class Main {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
+        Scanner sc = new Scanner(System.in);
         Logic logic = new Logic();
-        Ui ui = new Ui(scanner, logic);
+        Ui ui = new Ui(sc, logic);
         ui.launch();
     }
     

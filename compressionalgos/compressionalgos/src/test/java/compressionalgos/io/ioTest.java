@@ -23,30 +23,49 @@ import java.nio.charset.StandardCharsets;
  */
 public class ioTest {
     
+    /**
+     *
+     */
     @Rule
     public TemporaryFolder tempFolder = new TemporaryFolder();
     
+    /**
+     *
+     */
     public ioTest() {
     }
     
+    /**
+     *
+     */
     @BeforeClass
     public static void setUpClass() {
     }
     
+    /**
+     *
+     */
     @AfterClass
     public static void tearDownClass() {
     }
     
+    /**
+     *
+     */
     @Before
     public void setUp() {
     }
     
+    /**
+     *
+     */
     @After
     public void tearDown() {
     }
 
     /**
      * Test of ReadBytesFromFile method, of class Io.
+     * @throws java.io.IOException
      */
     @Test
     public void testReadBytesFromFile() throws IOException {

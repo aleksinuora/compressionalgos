@@ -16,7 +16,7 @@ public class Logic {
     private Io io;
     
     /**
-     *
+     * Constructor, default values
      */
     public Logic() {
         this.source = "";
@@ -25,8 +25,8 @@ public class Logic {
     }
     
     /**
-     *
-     * @param choice
+     * Run algorithm of choice on selected file
+     * @param choice 
      * @return
      */
     public boolean runAlgo(String choice) {
@@ -47,38 +47,32 @@ public class Logic {
     }
     
     /**
-     *
-     * @param source
-     * @return
+     * Set source file path
+     * @param source file path
      */
-    public boolean setSource(String source) {
+    public void setSource(String source) {
         this.source = source;
-        
-        return true;
     }
     
     /**
-     *
-     * @return
+     * Get current source file path
+     * @return source path as String
      */
     public String getSource() {
         return this.source;
     }
     
     /**
-     *
-     * @param output
-     * @return
+     * Set output file path and name
+     * @param output file path and name
      */
-    public boolean setOutput(String output) {
+    public void setOutput(String output) {
         this.output = output;
-        
-        return true;
     }
     
     /**
-     *
-     * @return
+     * Get current output file path and name
+     * @return file path and name
      */
     public String getOutput() {
         return this.output;

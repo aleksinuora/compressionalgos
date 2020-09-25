@@ -21,4 +21,8 @@ jacocoTestReport {
 	}
 }
 
+run {
+    standardInput = System.in
+}
+
 check.dependsOn jacocoTestReport

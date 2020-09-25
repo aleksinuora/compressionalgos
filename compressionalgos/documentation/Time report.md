@@ -24,3 +24,10 @@ Date       | hours | target |
 -"-        | 6     | Huffman compression implemented with default data structures |
 -"-        | 1     | Worked out problems with Junit |
 -"-        | 1     | Javadoccing, documentation |
+
+## Week 4
+Date       | hours | target |
+-----------|-------|--------|
+2020-09-25 | 3     | Scanner class broke down, tried to fix it |
+-"-        | 10    | Worked on making the Huffman tree output more efficient |
+-"-        | 1     | More Javadoccing, documentation |
