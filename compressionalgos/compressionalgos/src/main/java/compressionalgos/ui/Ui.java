@@ -14,7 +14,8 @@ import java.util.*;
 public class Ui {
     // for testing purposes  --
     static String testSource = "src/main/java/testing/simpleTextFile.txt";
-    static String testDest = "src/main/java/testing/testObject";
+    static String testDest = "src/main/java/testing/testFileOut";
+    static String testDecDest = "src/main/java/testing/testFileBack";
     static boolean testing = true;
     // -- for testing purposes
     
@@ -40,7 +41,8 @@ public class Ui {
 //        System.out.println("Source path: ");
 //        String source = scanner.nextLine();
 //        logic.setSource(source);
-//        System.out.println("Available algorithms: (1) Huffman compress");
+//        System.out.println("Available algorithms: (1) Huffman compress"
+//                + "\n (2) Huffman decompress");
 //        String algoChoice = scanner.nextLine();
 //        System.out.println("Output path: ");
 //        String output = scanner.nextLine();
@@ -49,8 +51,12 @@ public class Ui {
         if (testing) {
             logic.setSource(testSource);
             logic.setOutput(testDest);
+            logic.runAlgo("1");
+            logic.setSource(testDest.concat(".hf"));
+            logic.setOutput(testDecDest);
+            logic.runAlgo("2");
         }
         // -- for testing purposes
-        logic.runAlgo("1");
+        //logic.runAlgo("1");
     }
 }

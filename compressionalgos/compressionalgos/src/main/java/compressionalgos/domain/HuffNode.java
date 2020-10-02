@@ -4,14 +4,13 @@
  * and open the template in the editor.
  */
 package compressionalgos.domain;
-import java.util.Comparator;
 
 
 /**
- *
+ * Data structure for representing a Huffman tree
  * @author aleksi
  */
-public class HuffNode implements java.io.Serializable{
+public class HuffNode{
 
     /**
      * Frequency of byte

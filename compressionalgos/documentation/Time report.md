@@ -31,3 +31,10 @@ Date       | hours | target |
 2020-09-25 | 3     | Scanner class broke down, tried to fix it |
 -"-        | 10    | Worked on making the Huffman tree output more efficient |
 -"-        | 1     | More Javadoccing, documentation |
+
+## Week 5
+Date       | hours | target |
+-----------|-------|--------|
+2020-10-2  | 10    | See progress report |
+-"-        | 3     | Unit testing  |
+-"-        | 1     | More Javadoccing, documentation |

@@ -7,7 +7,7 @@ package compressionalgos.logic;
 import compressionalgos.io.Io;
 
 /**
- *
+ * Software logic class
  * @author aleksi
  */
 public class Logic {
@@ -34,16 +34,26 @@ public class Logic {
             case "0": 
                 return false;
             case "1": 
-                runHuffman();
+                HuffCompress();
+                return true;
+            case "2":
+                HuffDecompress();
                 return true;
         }
         
         return true;
     }
     
-    private void runHuffman() {
-        Huffman huffman = new Huffman(io.readBytesFromFile(source));
-        io.writeObjectToFile(output, huffman.compress());
+    private void HuffCompress() {
+        Huffman huffman = new Huffman(io.readBytesFromFile(source), source);
+        io.writeByteArrayToFile(output.concat(".hf"), huffman.compress());
+    }
+    
+    private void HuffDecompress() {
+        Huffman huffman = new Huffman(io.readBytesFromFile(source), source);
+        huffman.decompress();
+        byte[] byteArray = huffman.buildByteArray();
+        io.writeByteArrayToFile(output.concat(huffman.getFileType()), byteArray);
     }
     
     /**

@@ -9,7 +9,7 @@ import java.util.Comparator;
 import compressionalgos.domain.HuffNode;
 
 /**
- *
+ * See below
  * @author aleksi
  */
 public class HuffNodeComparator implements Comparator<HuffNode> {

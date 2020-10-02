@@ -14,7 +14,7 @@ import java.nio.file.*;
 public class Main {
 
     static String testSource = "src/main/java/testing/simpleTextFile.txt";
-    static String testDest = "src/main/java/testing/testObject";
+    static String testDest = "src/main/java/testing/testFileOut.hf";
     /**
      * @param args the command line arguments
      */
