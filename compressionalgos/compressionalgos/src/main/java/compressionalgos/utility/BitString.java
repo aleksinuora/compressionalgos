@@ -14,6 +14,7 @@ public class BitString {
     private byte[] byteArray;
     private long bitCount;
     private int byteIndex;
+    private int padBits;
     
     /**
      * Basic constructor. Creates a byte array with length 1.
@@ -23,6 +24,7 @@ public class BitString {
         this.byteArray = new byte[1];
         this.bitCount = 0;
         this.byteIndex = 0;
+        this.padBits = 0;
     }
     
     /**
@@ -34,6 +36,7 @@ public class BitString {
         this.byteArray = new byte[capacity];
         this.byteIndex = 0;
         this.bitCount = 0;
+        this.padBits = 0;
     }
     
     /**
@@ -45,6 +48,7 @@ public class BitString {
         this.capacity = byteArray.length;
         this.bitCount = byteArray.length * 8;
         this.byteIndex = byteArray.length - 1;
+        this.padBits = 0;
     }
     
     /**
@@ -56,21 +60,21 @@ public class BitString {
         bitCount++;
         checkSize();
         byteIndex = (int)(bitCount-1) / 8;
-        byte byteNew = byteArray[byteIndex];
+        int byteNew = byteArray[byteIndex];
         // Bit shift the byte by 1 to effectively append a 0
         byteNew = byteNew << 1;
         // Change the appended bit to 1 if appropriate
         if (bit) {
             byteNew++;
         }
-        byteArray[byteIndex] = byteNew;
+        byteArray[byteIndex] = (byte)byteNew;
     }
     
     /**
      * Add a whole byte of bits to the BitString.
      * @param bits a byte of bits to be added
      */
-    public void add(byte bits) {
+    public void addByte(byte bits) {
         String bin = Integer.toBinaryString(bits);
         for (int i = 0; i < bin.length(); i++) {
             add(bin.charAt(i) == '1');
@@ -112,12 +116,22 @@ public class BitString {
      * @return
      */
     public boolean getBit(long index) {
-        int shiftedByte = byteArray[(int)(index) / 8];
-        shiftedByte >>= (bitCount % 8) - 1 - (index % 8);
-        if (shiftedByte % 2 == 0) {
-            return false;
+        if (index >= bitCount) {
+            throw new ArrayIndexOutOfBoundsException("Index " + index 
+                    + " out of bounds for length " + bitCount);
         }
-        return true;
+        int shiftedByte;
+        int arrayIndex = (int)index / 8;
+        int bCMod = (int)bitCount % 8;
+        int indexMod = (int)index % 8;
+        // if target bit is in the last byte and the last byte isn't full:
+        if (arrayIndex == index / 8 && bCMod != 0) {
+            shiftedByte = byteArray[arrayIndex] >> (bCMod - 1 - indexMod);
+            return (shiftedByte % 2 != 0);
+        }
+        // if target bit is in a full byte:
+        shiftedByte = byteArray[arrayIndex] >> (7 - (indexMod));
+        return (shiftedByte % 2 != 0);
     }
     
     /**
@@ -144,7 +158,7 @@ public class BitString {
         }
         byte newByte = 0;
         for (int i = 0; i < 8; i++) {
-            newByte <<= 1;
+            newByte = (byte)((newByte & 0xFF) << 1);
             if (getBit(start + i)) {
                 newByte++;
             }
@@ -163,7 +177,7 @@ public class BitString {
     }
     
     private void checkSize() {
-        if (bitCount >= (long)byteArray.length * 8) {
+        if (bitCount > (long)byteArray.length * 8) {
             resize();
         }
     }
@@ -199,8 +213,13 @@ public class BitString {
      * Pad the last byte in this BitString with trailing zeroes.
      */
     public void pad() {
-        while(bitCount % 8 != 0) {
+        while(bitCount % 8 > 0) {
             add(false);
+            this.padBits++;
         }
+    }
+    
+    public int getPadBits() {
+        return this.padBits;
     }
 }

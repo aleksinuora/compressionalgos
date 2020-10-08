@@ -15,6 +15,10 @@ public class HfBuilder {
     private byte[] file;
     private byte[] tree;
     private byte[] code;
+    private int treeBytes;
+    private int codeBytes;
+    private int treePadding;
+    private int codePadding;
     
     /**
      * Constructor.
@@ -25,20 +29,24 @@ public class HfBuilder {
      */
     public HfBuilder(String source, BitString tree, BitString code, int byteSize) {
         // reserving 2 bytes to identify as Huffman file, 3 bytes for original
-        // filetype and 4 for byteSize
+        // filetype, 4 for byteSize and 4 for tree and code lengths
         tree.pad();
         code.pad();
-        this.file = new byte[9 + tree.length()+code.length()];
+        this.file = new byte[13 + tree.length()+code.length()];
         this.source = source;
         this.byteSize = byteSize;
         this.tree = new byte[tree.length()];
         System.arraycopy(tree.getArray(false), 0, this.tree, 0, tree.length());
+        this.treeBytes = tree.length();
+        this.treePadding = tree.getPadBits();
         this.code = new byte[code.length()];
         System.arraycopy(code.getArray(false), 0, this.code, 0, code.length());
+        this.codeBytes = code.length();
+        this.codePadding = code.getPadBits();
     }
     
     /**
-     * Creates a Huffman file with a 9 byte header, Huffman tree and Huffman
+     * Creates a Huffman file with a 13 byte header, Huffman tree and Huffman
      * coded file and compiles them into a byte[].
      * @return Huffman file as a byte[]
      */
@@ -55,9 +63,7 @@ public class HfBuilder {
         String[] end = source.split("\\.");
         String fileType = end[end.length-1];
         byte[] fileTypeBytes = fileType.getBytes();
-        for (int i = 0; i < fileTypeBytes.length; i++) {
-            file[i + 2] = fileTypeBytes[i];
-        }        
+        System.arraycopy(fileTypeBytes, 0, file, 2, fileTypeBytes.length);
         // convert byteSize integer to byte array and append to bin array
         byte[] b = new byte[]{
             (byte)(byteSize >>> 24),
@@ -65,14 +71,16 @@ public class HfBuilder {
             (byte)(byteSize >>> 8),
             (byte)(byteSize)
         };
-        for (int i = 0; i < 4; i++) {
-            file[i + 5] = b[i];
-        }
+        System.arraycopy(b, 0, file, 5, 4);
+        file[8] = (byte)this.treeBytes;
+        file[9] = (byte)this.treePadding;
+        file[10] = (byte)this.codeBytes;
+        file[11] = (byte)this.codePadding;
     }
     
     private void makeFile() {
         makeHeader();
-        System.arraycopy(tree, 0, file, 9, tree.length);
-        System.arraycopy(code, 0, file, 9 + tree.length, code.length);
+        System.arraycopy(tree, 0, file, 13, tree.length);
+        System.arraycopy(code, 0, file, 13 + tree.length, code.length);
     }
 }

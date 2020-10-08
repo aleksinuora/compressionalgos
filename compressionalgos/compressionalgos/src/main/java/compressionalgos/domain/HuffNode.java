@@ -10,7 +10,7 @@ package compressionalgos.domain;
  * Data structure for representing a Huffman tree
  * @author aleksi
  */
-public class HuffNode{
+public class HuffNode implements Comparable<HuffNode>{
 
     /**
      * Frequency of byte
@@ -45,5 +45,11 @@ public class HuffNode{
         this.value = 127;
         this.left = null;
         this.right = null;
+        this.parent = null;
+    }
+    
+    @Override
+    public int compareTo(HuffNode node) {
+        return Long.compare(this.freq, node.freq);
     }
 }
