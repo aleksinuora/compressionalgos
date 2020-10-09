@@ -38,3 +38,12 @@ Date       | hours | target |
 2020-10-2  | 10    | See progress report |
 -"-        | 3     | Unit testing  |
 -"-        | 1     | More Javadoccing, documentation |
+
+## Week 6
+Date       | hours | target |
+-----------|-------|--------|
+2020-10-3  | 5     | Unit testing |
+2020-10-7  | 8     | Fixing bugs |
+2020-10-8  | 9     | MinQueue + tests |
+2020-10-9  | 6     | Reworking compression output format, fixing Huffman code generation |
+2020-10-9  | 1     | Javadoccing, reporting |

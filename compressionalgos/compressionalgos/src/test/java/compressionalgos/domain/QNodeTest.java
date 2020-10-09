@@ -3,9 +3,8 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package compressionalgos.utility;
+package compressionalgos.domain;
 
-import compressionalgos.domain.HuffNode;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -17,9 +16,9 @@ import static org.junit.Assert.*;
  *
  * @author aleksi
  */
-public class HuffNodeComparatorTest {
+public class QNodeTest {
     
-    public HuffNodeComparatorTest() {
+    public QNodeTest() {
     }
     
     @BeforeClass
@@ -38,18 +37,8 @@ public class HuffNodeComparatorTest {
     public void tearDown() {
     }
 
-    /**
-     * Test of compare method, of class HuffNodeComparator.
-     */
     @Test
-    public void testCompare() {
-        System.out.println("compare");
-        HuffNode a = null;
-        HuffNode b = null;
-        HuffNodeComparator instance = new HuffNodeComparator();
-        int expResult = 0;
-        int result = instance.compare(a, b);
-        assertEquals(expResult, result);
+    public void testSomeMethod() {
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
     }

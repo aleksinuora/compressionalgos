@@ -3,8 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package compressionalgos.utility;
+package compressionalgos.domain;
 
+import compressionalgos.domain.BitString;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -83,6 +84,26 @@ public class BitStringTest {
         }
         assertEquals("Wrong bits: only " + correct + " out of " + bitCount 
                 + " were correct.", correct, bitCount);
+    }
+    
+    /**
+     * Try adding lots of 1's
+     */
+    @Test
+    public void testAdd_boolean_3() {
+        System.out.println("add 3");
+        BitString instance = new BitString();
+        for (int i = 0; i < 128; i++) {
+            instance.add(true);
+        }
+        int correct = 0;
+        for (int i = 0; i < 128; i++) {
+            if (instance.getBit((long)i)) {
+                correct++;
+            }
+        }
+        assertEquals("Only " + correct + " out of " + 128 + " bits were correct"
+                , 128, correct);
     }
 
     /**
@@ -259,6 +280,46 @@ public class BitStringTest {
         byte result = instance.getArray(false)[1];
         byte expResult = (byte)-128;
         assertEquals("Expected " + expResult + ", got " + result, expResult, result);
+    }
+
+    /**
+     * Test of add method, of class BitString.
+     */
+    @Test
+    public void testAdd() {
+        System.out.println("add");
+        boolean bit = false;
+        BitString instance = new BitString();
+        instance.add(bit);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
+    }
+
+    /**
+     * Test of addByte method, of class BitString.
+     */
+    @Test
+    public void testAddByte() {
+        System.out.println("addByte");
+        byte bits = 0;
+        BitString instance = new BitString();
+        instance.addByte(bits);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
+    }
+
+    /**
+     * Test of getPadBits method, of class BitString.
+     */
+    @Test
+    public void testGetPadBits() {
+        System.out.println("getPadBits");
+        BitString instance = new BitString();
+        int expResult = 0;
+        int result = instance.getPadBits();
+        assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
     }
     
 }

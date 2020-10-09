@@ -3,8 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package compressionalgos.utility;
+package compressionalgos.domain;
 
+import compressionalgos.domain.MinQueue;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -99,6 +100,22 @@ public class MinQueueTest {
         q1.poll();
         boolean result = q1.isEmpty();
         assertTrue(result);
+    }
+
+    /**
+     * Test of hasTwo method, of class MinQueue.
+     */
+    @Test
+    public void testHasTwo() {
+        System.out.println("hasTwo");
+        MinQueue instance = new MinQueue();
+        instance.put("1");
+        instance.put("2");
+        boolean result_1 = instance.hasTwo();
+        instance.poll();
+        boolean result_2 = instance.hasTwo();
+        assertTrue(result_1);
+        assertFalse(result_2);
     }
     
 }

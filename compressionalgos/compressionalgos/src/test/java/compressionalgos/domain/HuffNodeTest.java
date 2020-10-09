@@ -42,5 +42,20 @@ public class HuffNodeTest {
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
     }
+
+    /**
+     * Test of compareTo method, of class HuffNode.
+     */
+    @Test
+    public void testCompareTo() {
+        System.out.println("compareTo");
+        HuffNode node = null;
+        HuffNode instance = new HuffNode();
+        int expResult = 0;
+        int result = instance.compareTo(node);
+        assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
+    }
     
 }

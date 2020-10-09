@@ -4,9 +4,10 @@
  * and open the template in the editor.
  */
 package compressionalgos.logic;
+import compressionalgos.domain.MinQueue;
+import compressionalgos.domain.BitString;
 import compressionalgos.domain.*;
 import compressionalgos.utility.*;
-import java.util.*;
 
 
 /**
@@ -15,9 +16,9 @@ import java.util.*;
  */
 public class Huffman {
     // preliminary implementation
-    private byte[] bytes;
-    private HashMap<Byte, Integer> freqMap;
-    private HashMap<Byte, Byte> dictionary;
+    private byte[] bytes;    
+    private int[] freqMap;
+    private byte[] dictionary;    
     private MinQueue<HuffNode> nodeQueue;
     private HuffNode root;
     private long binIndex;
@@ -27,7 +28,6 @@ public class Huffman {
     private String fileType;
     private int byteSize;
     private long treeBits;
-    private long codeBits;
     
     /**
      * Basic constructor
@@ -36,8 +36,8 @@ public class Huffman {
      */
     public Huffman(byte[] bytes, String source) {
         this.bytes = bytes;
-        this.freqMap = new HashMap<>();
-        this.dictionary = new HashMap<>();
+        this.freqMap = new int[256];
+        this.dictionary = new byte[256];        
         this.nodeQueue = new MinQueue<>();
         this.root = null;
         this.binIndex = 0;
@@ -71,9 +71,8 @@ public class Huffman {
      * Build frequency map of bytes in the byte array.
      */    
     private void buildFreqMap() {
-        for (byte b: bytes) {
-            freqMap.putIfAbsent(b, 0);
-            freqMap.put(b, freqMap.get(b) + 1);
+        for (byte b: bytes) {            
+            freqMap[b & 0xFF]++;
         }        
     }
     
@@ -82,12 +81,14 @@ public class Huffman {
      */
     private void buildFreqTree() {       
         // Create a leaf node for each unique byte
-        for (byte b: freqMap.keySet()) {
-            HuffNode node = new HuffNode();
-            node.value = b;
-            node.freq = freqMap.get(b);
-            nodeQueue.put(node);
-        }        
+        for (int i = 0; i < freqMap.length; i++) {
+            if (freqMap[i] > 0) {
+                HuffNode node = new HuffNode();
+                node.value = (byte)i;
+                node.freq = freqMap[i];
+                nodeQueue.put(node);
+            }
+        }
         // Create branches and link them to leaves
         while (nodeQueue.hasTwo()) {
             HuffNode first = nodeQueue.poll();
@@ -117,16 +118,12 @@ public class Huffman {
             // Write 0 to mark leaf node, followed by byte value of node in 8 bits
             binTree.add(false);            
             // Convert node's byte value into bit string and append it to binCode
-            String bin = Integer.toBinaryString((node.value & 0xFF) + 256).substring(1);
-            
-            System.out.println(Integer.toBinaryString(codeword));
-            System.out.println(bin);
-            
+            String bin = Integer.toBinaryString((node.value & 0xFF) + 256).substring(1);             
             for (int i = 0; i < 8; i++) {
                 binTree.add(bin.charAt(i) == '1');
             }
             // Add the leaf's byte value to dictionary along with current codeword
-            dictionary.put(node.value, codeword);
+            dictionary[node.value & 0xFF] = codeword;
             return;
         }
         // Append codeword with 0
@@ -151,7 +148,7 @@ public class Huffman {
      */
     private void buildCode() {
         for (int i = 0; i < bytes.length; i++) {
-            binCode.addByte(dictionary.get(bytes[i]));
+            binCode.addByte(dictionary[bytes[i] & 0xFF]);
         }
     }
     
@@ -163,7 +160,7 @@ public class Huffman {
         binCode = new BitString(bytes);
         root = new HuffNode();
         readHeader();
-        binIndex = 13 * 8;
+        this.binIndex = 10 * 8;
         buildTreeFromBin(root);        
     }
     
@@ -178,15 +175,14 @@ public class Huffman {
             bytes[4]
         };
         fileType = new String(fileTypeBytes);
-        // Read byte size of original file from bytes [6->10]
+        // Read byte size of original file from bytes [5->9]
         // and convert to int by bit shifting and addition
         byteSize = 0;
-        for (int i = 0; i < 4; i++) {
-            byteSize = byteSize << 8;
-            byteSize += bytes[5 + i];
-        }
-        this.treeBits = bytes[9] * 8 + bytes[10];
-        this.codeBits = bytes[11] * 8 + bytes[12];
+        byteSize = ((bytes[5] & 0xFF) << 24) | 
+            ((bytes[6] & 0xFF) << 16) | 
+            ((bytes[7] & 0xFF) << 8 ) | 
+            ((bytes[8] & 0xFF));
+        this.treeBits = bytes[9];
     }
     
     /**
@@ -195,10 +191,9 @@ public class Huffman {
     private void buildTreeFromBin(HuffNode node) {
         // Read node type bit; if node type is 0(leaf), write next 8 bits to 
         // value as byte and add byte to dictionary with current code word as key
-        if (!binCode.getBit(binIndex++)) {
+        if (binCode.getBit(binIndex++) == false) {
             node.value = binCode.makeByte(binIndex);
             binIndex += 8;
-            
             return;
         }
         if (binCode.getBit(binIndex++)) {
@@ -217,13 +212,11 @@ public class Huffman {
     */
     public byte[] buildByteArray() {
         byte[] originalBytes = new byte[byteSize];
-        binIndex = 13 * 8 + treeBits;
+        binIndex += treeBits;        
         for (int i = 0; i < byteSize; i++) {
-            // Skip leading 1 (thanks, Java)
+            // Skip leading 1
             binIndex++;
             originalBytes[i] = buildCodeFromBin(root);
-            
-            System.out.println(Integer.toBinaryString(originalBytes[i]));
         }
         return originalBytes;
     }

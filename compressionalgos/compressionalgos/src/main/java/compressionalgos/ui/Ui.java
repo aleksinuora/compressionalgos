@@ -12,11 +12,12 @@ import java.util.*;
  * @author aleksi
  */
 public class Ui {
-    // for testing purposes  --
+    // for testing purposes
+    // feel free to change the file paths --
     static String testSource = "src/main/java/testing/simpleTextFile.txt";
     static String testDest = "src/main/java/testing/testFileOut";
     static String testDecDest = "src/main/java/testing/testFileBack";
-    static boolean testing = true;
+    static boolean full = true;
     // -- for testing purposes
     
     Scanner scanner;
@@ -27,28 +28,30 @@ public class Ui {
      * @param scanner
      * @param logic
      */
-    public Ui(Scanner scanner, Logic logic) {
+    public Ui(Scanner scanner, Logic logic, boolean full) {
         this.scanner = scanner;
         this.logic = logic;
+        this.full = full;
     }
     
     /**
      * Launch user interface
      */
     public void launch() {
-        
-        // !!! Scanner class currently broken, using hardcoded inputs !!!
-//        System.out.println("Source path: ");
-//        String source = scanner.nextLine();
-//        logic.setSource(source);
-//        System.out.println("Available algorithms: (1) Huffman compress"
-//                + "\n (2) Huffman decompress");
-//        String algoChoice = scanner.nextLine();
-//        System.out.println("Output path: ");
-//        String output = scanner.nextLine();
-//        logic.setOutput(output);
-        // for testing purposes --
-        if (testing) {
+        // The scanner class seems to sometimes interact badly with gradle and 
+        // NetBeans. 
+        if (full) {
+            System.out.println("Source path: ");
+            String source = scanner.nextLine();
+            logic.setSource(source);
+            System.out.println("Available algorithms: (1) Huffman compress"
+                    + "\n (2) Huffman decompress");
+            String algoChoice = scanner.nextLine();
+            System.out.println("Output path: ");
+            String output = scanner.nextLine();
+            logic.setOutput(output);
+        }
+        if (!full) {
             logic.setSource(testSource);
             logic.setOutput(testDest);
             logic.runAlgo("1");
@@ -56,7 +59,5 @@ public class Ui {
             logic.setOutput(testDecDest);
             logic.runAlgo("2");
         }
-        // -- for testing purposes
-        //logic.runAlgo("1");
     }
 }

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package compressionalgos.utility;
+package compressionalgos.domain;
 
 /**
  *
@@ -56,7 +56,6 @@ public class BitString {
      * @param bit to be added
      */
     public void add(boolean bit) {
-        // !incomplete! Figure out the bit manipulation
         bitCount++;
         checkSize();
         byteIndex = (int)(bitCount-1) / 8;
@@ -219,6 +218,10 @@ public class BitString {
         }
     }
     
+    /**
+     * Getter for number of padded bits.
+     * @return number of padded bits
+     */
     public int getPadBits() {
         return this.padBits;
     }

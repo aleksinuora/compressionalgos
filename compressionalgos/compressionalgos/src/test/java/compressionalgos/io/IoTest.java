@@ -53,21 +53,6 @@ public class IoTest {
     }
 
     /**
-     * Test of readObjectFromFile method, of class Io.
-     */
-    @Test
-    public void testReadObjectFromFile() {
-        System.out.println("readObjectFromFile");
-        String path = "";
-        Io instance = new Io();
-        Object expResult = null;
-        Object result = instance.readObjectFromFile(path);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
      * Test of writeByteArrayToFile method, of class Io.
      */
     @Test
@@ -81,22 +66,5 @@ public class IoTest {
         assertEquals(expResult, result);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of writeObjectToFile method, of class Io.
-     */
-    @Test
-    public void testWriteObjectToFile() {
-        System.out.println("writeObjectToFile");
-        String path = "";
-        Object object = null;
-        Io instance = new Io();
-        boolean expResult = false;
-        boolean result = instance.writeObjectToFile(path, object);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-    
+    }    
 }

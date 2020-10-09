@@ -12,6 +12,7 @@ repositories {
 
 dependencies {
     testImplementation     'junit:junit:4.13'
+    runtime fileTree(dir: 'libs', include: '*.jar')
 }
 
 jacocoTestReport {
