@@ -15,16 +15,15 @@ import compressionalgos.utility.*;
  * @author aleksi
  */
 public class Huffman {
-    // preliminary implementation
     private byte[] bytes;    
     private int[] freqMap;
-    private byte[] dictionary;    
+    private BitString[] dictionary;    
     private MinQueue<HuffNode> nodeQueue;
     private HuffNode root;
     private long binIndex;
     private BitString binTree;
     private BitString binCode;
-    private String source;
+    private final String source;
     private String fileType;
     private int byteSize;
     private long treeBits;
@@ -37,7 +36,7 @@ public class Huffman {
     public Huffman(byte[] bytes, String source) {
         this.bytes = bytes;
         this.freqMap = new int[256];
-        this.dictionary = new byte[256];        
+        this.dictionary = new BitString[256];        
         this.nodeQueue = new MinQueue<>();
         this.root = null;
         this.binIndex = 0;
@@ -57,7 +56,7 @@ public class Huffman {
         buildFreqTree();
         // Build a binary representation of the tree, append to binCode,
         // build dictionary on the same pass
-        byte code = 1;
+        BitString code = new BitString();
         buildTreeBin(root, code);
         // Build Huffman code with dictionary, append to binCode
         buildCode();
@@ -107,38 +106,33 @@ public class Huffman {
      * Variable binaryTree will contain a binary representation of the
      * Huffman tree. Format: [node type][byte value].
      * Node type: 0 for leaf, 1 for internal.
-     * Byte value will only follow a leaf node, i.e 0.
+     * Byte value will only follow a leaf node, i.e 0, and comes in full 8 bits.
      * @param node root node
      */
-    private void buildTreeBin(HuffNode node, byte codeword) {
-        if (node == null) {
-            return;
-        }        
-        if (node.left == null && node.right == null) {
+    private void buildTreeBin(HuffNode node, BitString codeword) {
+        if ((node.left == null && node.right == null)) {
             // Write 0 to mark leaf node, followed by byte value of node in 8 bits
             binTree.add(false);            
             // Convert node's byte value into bit string and append it to binCode
-            String bin = Integer.toBinaryString((node.value & 0xFF) + 256).substring(1);             
-            for (int i = 0; i < 8; i++) {
-                binTree.add(bin.charAt(i) == '1');
-            }
-            // Add the leaf's byte value to dictionary along with current codeword
-            dictionary[node.value & 0xFF] = codeword;
+            binTree.addWholeByte(node.value);
+            dictionary[(node.value & 0xFF)] = new BitString();
+            dictionary[(node.value & 0xFF)].concatenate(codeword);
             return;
         }
-        // Append codeword with 0
-        codeword = (byte)((codeword & 0xFF) << 1);
         // Add 1 to tree binary if node is internal
         binTree.add(true);
+        // Add 1 to codeword to mark left turn
         if (node.left != null) {
+            codeword.add(true);
             binTree.add(true);
-            codeword++;
             buildTreeBin(node.left, codeword);
+            codeword.removeLast();
         }    
         if (node.right != null) {
             binTree.add(false);
-            codeword--;
+            codeword.add(false);
             buildTreeBin(node.right, codeword);
+            codeword.removeLast();
         }            
     }
     
@@ -148,7 +142,7 @@ public class Huffman {
      */
     private void buildCode() {
         for (int i = 0; i < bytes.length; i++) {
-            binCode.addByte(dictionary[bytes[i] & 0xFF]);
+            binCode.concatenate(dictionary[(bytes[i] & 0xFF)]);
         }
     }
     
@@ -190,7 +184,7 @@ public class Huffman {
      */
     private void buildTreeFromBin(HuffNode node) {
         // Read node type bit; if node type is 0(leaf), write next 8 bits to 
-        // value as byte and add byte to dictionary with current code word as key
+        // value as byte
         if (binCode.getBit(binIndex++) == false) {
             node.value = binCode.makeByte(binIndex);
             binIndex += 8;
@@ -214,21 +208,22 @@ public class Huffman {
         byte[] originalBytes = new byte[byteSize];
         binIndex += treeBits;        
         for (int i = 0; i < byteSize; i++) {
-            // Skip leading 1
-            binIndex++;
-            originalBytes[i] = buildCodeFromBin(root);
+            BitString path = new BitString();
+            originalBytes[i] = buildCodeFromBin(root, path);
         }
         return originalBytes;
     }
 
-    private byte buildCodeFromBin(HuffNode node) {
+    private byte buildCodeFromBin(HuffNode node, BitString path) {
         if (node.left == null && node.right == null) {
             return node.value;
         }
         if (binCode.getBit(binIndex++)) {
-            return buildCodeFromBin(node.left);
+            path.add(true);
+            return buildCodeFromBin(node.left, path);
         } else {
-            return buildCodeFromBin(node.right);
+            path.add(false);
+            return buildCodeFromBin(node.right, path);
         }
     }    
     

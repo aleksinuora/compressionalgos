@@ -12,6 +12,7 @@ import compressionalgos.domain.BitString;
  * @author aleksi
  */
 public class HfBuilder {
+    private final StringTools stringTools = new StringTools();
     private String source;
     private int byteSize;
     private byte[] file;
@@ -64,7 +65,7 @@ public class HfBuilder {
         file[0] = 0b01001000;
         file[1] = 0b01100110;        
         // convert original file type to byte array and append to bin array:
-        String[] end = source.split("\\.");
+        String[] end = stringTools.split(source, '.', false);
         String fileType = end[end.length-1];
         byte[] fileTypeBytes = fileType.getBytes();
         System.arraycopy(fileTypeBytes, 0, file, 2, fileTypeBytes.length);

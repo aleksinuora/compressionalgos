@@ -47,3 +47,13 @@ Date       | hours | target |
 2020-10-8  | 9     | MinQueue + tests |
 2020-10-9  | 6     | Reworking compression output format, fixing Huffman code generation |
 2020-10-9  | 1     | Javadoccing, reporting |
+
+## Week 7-8
+Date       | hours | target |
+-----------|-------|--------|
+2020-10-14 | 8     | Testing, fixing a major bug |
+2020-10-15 | 6     | Finalizing Huffman |
+2020-10-16 | 7     | Studying and comparing LZSS vs. LZW |
+2020-10-17 | 10    | Start work on LZW, auxiliary data structures |
+2020-10-18 | 10    | Binary search tree done, BitString expanded |
+2020-10-19 | 9     | Sketched out first version of LZW compression, started on decompression |

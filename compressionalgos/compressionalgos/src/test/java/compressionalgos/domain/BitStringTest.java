@@ -107,7 +107,7 @@ public class BitStringTest {
     }
 
     /**
-     * Test of add method, of class BitString.
+     * Test of addByte method, of class BitString.
      */
     @Test
     public void testAddByte_byte() {
@@ -117,6 +117,133 @@ public class BitStringTest {
         instance.addByte(bits);
         byte[] bytes = instance.getArray(false);
         assertTrue("First byte: " + trueFail, bytes[0] == 0b101);
+    }
+    
+    /**
+     * Test of addByte method, of class BitString
+     */
+    @Test
+    public void testAddByte_byte_2() {
+        System.out.println("addByte2");
+        byte bits = 0b1;
+        BitString instance = new BitString();
+        int byteCount = 24;
+        for (int i = 0; i < byteCount; i++) {
+            instance.addByte(bits);
+        }
+        int result = 0;
+        for (int i = 0; i < (byteCount); i++) {
+            if (instance.getBit(i)) {
+                result++;
+            }
+        }
+        int expected = byteCount;
+        assertEquals(result, expected);
+    }
+    
+    /**
+     * Test of addWholeByte method, of class BitString.
+     */
+    @Test
+    public void testAddWholeByte_byte() {
+        System.out.println("addWholeByte");
+        byte bits = 0b01010101;
+        BitString instance = new BitString();
+        instance.addWholeByte(bits);
+        int res = 0;
+        for (int i = 0; i < 8; i++) {
+            if (instance.getBit(i) == ((i % 2) == 1)) {
+                res++;
+            }
+        }
+        int exp = 8;
+        assertEquals(exp, res);
+    }
+    
+    /**
+     * Test of addInt method, of class BitString.
+     */
+    @Test
+    public void testAddInt_int() {
+        System.out.println("addInt");
+        int test = 0b11111111000000001111111100000000;
+        BitString instance = new BitString();
+        instance.addInt(test);
+        int res = 0;
+        for (int i = 0; i < 32; i++) {
+            if ((i < 8) || ((i > 15) && (i < 24))) {
+                if (instance.getBit(i)) {
+                    res++;
+                }
+            } else {
+                if (!instance.getBit(i)) {
+                    res++;
+                }
+            }
+        }
+        int exp = 32;
+        assertEquals(exp, res);
+    }
+    
+    /**
+     * Test of addInt method, of class BitString.
+     */
+    @Test
+    public void testAddInt_int2() {
+        System.out.println("addInt");
+        int test = 1;
+        int res = 0;
+        int res2 = 0;
+        int exp = 9;
+        BitString instance = new BitString();
+        instance.addInt(test, exp);
+        res = (int)instance.getBitCount();
+        assertEquals(exp, res);
+        for (int i = 0; i < exp - 1; i++) {
+            if (!instance.getBit(i)) {
+                res2++;
+            }
+        }
+        if (instance.getBit(exp - 1)) {
+            res2++;
+        }
+        assertEquals(exp, res2);
+    }
+    
+    /**
+     * Test of getInt method, of class BitString.
+     */
+    @Test
+    public void testGetInt() {
+        System.out.println("getInt\n");
+        int test = 0b11111111000000001111111100000000;
+        BitString instance = new BitString();
+        instance.addInt(test);
+        int res = instance.getInt();
+        int exp = -16711936;
+        assertEquals(exp, res);
+    }
+    
+    /**
+     * Test of addWholeByte method, of class BitString.
+     */
+    @Test
+    public void testAddWholeByte_byte2() {
+        System.out.println("addWholeByte_2");
+        byte bits = 0b1;
+        BitString instance = new BitString();
+        instance.addWholeByte(bits);
+        int res = 0;
+        for (int i = 0; i < 7; i++) {
+            if (!instance.getBit(i)) {
+                res++;
+            }
+        }
+        if (instance.getLastBit()) {
+            res++;
+        }
+        int exp = 8;
+        assertEquals(exp, res);
     }
 
     /**
@@ -173,6 +300,47 @@ public class BitStringTest {
         assertEquals("Wrong bits: only " + correctBit 
                 + " out of " + bitCount + " were correct",
                 bitCount, correctBit);
+    }
+    
+    /**
+     * Test of getBits method, of class BitString.
+     */
+    @Test
+    public void testGetBits() {
+        System.out.println("getBits");
+        BitString instance = new BitString();
+        int size = 256;
+        int start = 8;
+        int length = 120;
+        for (int i = 0; i < size; i++) {
+            instance.add(i % 2 == 1);
+        }
+        BitString temp = new BitString();
+        temp.concatenate(instance.getBits(start, length));
+        int res = (int)temp.getBitCount();
+        int res2 = 0;
+        for (int i = 0; i < res; i++) {
+            if (instance.getBit(i + start) == temp.getBit(i)) {
+                res2++;
+            }
+        }
+        assertEquals(length, res);
+        assertEquals(length, res2);
+    }
+    
+    /**
+     * Test of switchBit method, of class BitString.
+     */
+    @Test
+    public void testSwitchBit() {
+        System.out.println("switchBit");
+        BitString instance = new BitString();
+        int target = 21;
+        for (int i = 0; i < 25; i++) {
+            instance.add(false);
+        }
+        instance.switchBit(target);
+        assertTrue(instance.getBit(target));
     }
 
     /**
@@ -232,6 +400,23 @@ public class BitStringTest {
         assert(instance.getBitCount() == 0);
         assert(instance.getArray(false).length == 1);
     }
+    
+    /**
+     * Test for removeLast method, of class BitString.
+     */
+    @Test
+    public void testRemoveLast() {
+        System.out.println("removeLast");
+        BitString instance = new BitString();
+        for (int i = 0; i < 8; i++) {
+            instance.add(true);
+        }
+        instance.add(false);
+        instance.removeLast();
+        boolean res = instance.getBit(instance.getBitCount() - 1);
+        boolean exp = true;
+        assertEquals(exp, res);
+    }
 
     /**
      * Test of getBitCount method, of class BitString.
@@ -280,46 +465,5 @@ public class BitStringTest {
         byte result = instance.getArray(false)[1];
         byte expResult = (byte)-128;
         assertEquals("Expected " + expResult + ", got " + result, expResult, result);
-    }
-
-    /**
-     * Test of add method, of class BitString.
-     */
-    @Test
-    public void testAdd() {
-        System.out.println("add");
-        boolean bit = false;
-        BitString instance = new BitString();
-        instance.add(bit);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of addByte method, of class BitString.
-     */
-    @Test
-    public void testAddByte() {
-        System.out.println("addByte");
-        byte bits = 0;
-        BitString instance = new BitString();
-        instance.addByte(bits);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of getPadBits method, of class BitString.
-     */
-    @Test
-    public void testGetPadBits() {
-        System.out.println("getPadBits");
-        BitString instance = new BitString();
-        int expResult = 0;
-        int result = instance.getPadBits();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-    
+    }    
 }

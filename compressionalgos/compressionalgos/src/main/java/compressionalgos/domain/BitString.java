@@ -4,12 +4,16 @@
  * and open the template in the editor.
  */
 package compressionalgos.domain;
+import compressionalgos.utility.IntTools;
 
 /**
  *
  * @author aleksi
  */
 public class BitString {
+    private static final long LONGMASK = 0xFFFFFFFFL;
+    private static final short INTMASK = 0xFF;
+    private final IntTools intTools = new IntTools();
     private int capacity;
     private byte[] byteArray;
     private long bitCount;
@@ -70,14 +74,70 @@ public class BitString {
     }
     
     /**
-     * Add a whole byte of bits to the BitString.
-     * @param bits a byte of bits to be added
+     * Add a byte to the BitString as individual bits. Leading zeroes are not
+     * preserved. Note: this means 0-bytes don't add anything.
+     * @param bits a byte to be added
      */
     public void addByte(byte bits) {
-        String bin = Integer.toBinaryString(bits);
-        for (int i = 0; i < bin.length(); i++) {
-            add(bin.charAt(i) == '1');
+        for (int i = intTools.getBitCount(bits & INTMASK) - 1; i >= 0; i--) {
+            add(((bits & INTMASK) >> i) % 2 == 1); 
         }
+    }
+        
+    /**
+     * Add a byte with leading zeroes to pad up to full 8 bits.
+     * @param bits a byte to be added
+     */
+    public void addWholeByte(byte bits) {
+        // Bit shift by i to move individual bits to rightmost position,
+        // one by one, starting with the leftmost bit. If the examined bit is 1,
+        // the shifted byte will have an odd value, i.e. (bits)mod2 == 1
+        // -> add(true), and vice versa for 0 bit/even value.
+        for (int i = 7; i >= 0; i--) {
+            add((byte)(bits >> i) % 2 == 1);
+        }
+    }
+    
+    /**
+     * Add an int value as bits. Leading zeroes are not preserved.
+     * @param bits the int value to be added
+     */
+    public void addInt(int bits) {
+        for (int i = intTools.getBitCount(bits) - 1; i >= 0; i--) {
+            add(((bits & LONGMASK) >> i) % 2 == 1); 
+        }
+    }
+    
+    /**
+     * Add an int value as bits, with enough leading zeroes to fill in the given
+     * byte size.
+     * @param bits int to be added as bits
+     * @param byteSize desired byte size
+     */
+    public void addInt(int bits, int byteSize) {
+        int zeroes = byteSize - intTools.getBitCount(bits);
+        for (int i = 0; i < zeroes; i++) {
+            add(false);
+        }
+        addInt(bits);
+    }
+    
+    /**
+     * Get an int value representation of this bit string. Only converts the
+     * first 32 available bits.
+     * @return int value of this bit string
+     */
+    public int getInt() {
+        int value = 0;
+        byteIndex = (int)((bitCount - 1) / 8);
+        if (byteIndex > 3) {
+            byteIndex = 3;
+        }
+        for (int i = 0; i <= byteIndex; i++) {
+            value = value << 8;
+            value = (int)(value + (byteArray[i] & INTMASK));
+        }
+        return value;
     }
     
     /**
@@ -124,13 +184,50 @@ public class BitString {
         int bCMod = (int)bitCount % 8;
         int indexMod = (int)index % 8;
         // if target bit is in the last byte and the last byte isn't full:
-        if (arrayIndex == index / 8 && bCMod != 0) {
+        if (arrayIndex == bitCount / 8 && bCMod != 0) {
             shiftedByte = byteArray[arrayIndex] >> (bCMod - 1 - indexMod);
             return (shiftedByte % 2 != 0);
         }
         // if target bit is in a full byte:
         shiftedByte = byteArray[arrayIndex] >> (7 - (indexMod));
         return (shiftedByte % 2 != 0);
+    }
+    
+    /**
+     * Get a string of n bits, starting from a given index (inclusive). Returns
+     * the string as a new BitString.
+     * @param start starting index (inclusive)
+     * @param length number of bits to be copied
+     * @return new BitString object
+     */
+    public BitString getBits(long start, long length) {
+        BitString bits = new BitString((int)(length / 8));
+        for (long i = 0; i < length; i++) {
+            bits.add(this.getBit(start + i));
+        }
+        return bits;
+    }
+    
+    /**
+     * Switch the bit at the given index.
+     * @param index 
+     */
+    public void switchBit(long index) {
+        if (index >= bitCount) {
+            throw new ArrayIndexOutOfBoundsException("Index " + index 
+                    + " out of bounds for length " + bitCount);
+        }
+        byte bitmask = 1;
+        int arrayIndex = (int)index / 8;
+        int bCMod = (int)bitCount % 8;
+        int indexMod = (int)index % 8;
+        // If target bit is in the last byte and the last byte isn't full:
+        if (arrayIndex == bitCount / 8 && bCMod != 0) {            
+            bitmask = (byte)(bitmask << (bCMod - indexMod - 1));
+        } else {
+            bitmask = (byte)(bitmask << (7 - indexMod));
+        }
+        byteArray[arrayIndex] = (byte)(byteArray[arrayIndex] ^ bitmask);
     }
     
     /**
@@ -157,7 +254,7 @@ public class BitString {
         }
         byte newByte = 0;
         for (int i = 0; i < 8; i++) {
-            newByte = (byte)((newByte & 0xFF) << 1);
+            newByte = (byte)((newByte & INTMASK) << 1);
             if (getBit(start + i)) {
                 newByte++;
             }
@@ -166,13 +263,46 @@ public class BitString {
     }
     
     /**
+     * Get byte from the given index of the byte array.
+     * @param index byte array index
+     * @return byte from the given index
+     */
+    public byte getByte(int index) {
+        return makeByte((long)(index * 8));
+    }
+    
+    /**
+     * Concatenate this BitString with another one. Adds all of the given
+     * BitString to the end of this one.
+     * @param nextString BitString to be added
+     */
+    public void concatenate(BitString nextString) {
+        for (long i = 0; i < nextString.bitCount; i++) {
+            this.add(nextString.getBit(i));
+        } 
+    }
+    
+    /**
      * Empty the whole BitString.
      */
     public void clear() {
-        this.capacity = 8;
+        this.capacity = 1;
         this.byteArray = new byte[1];
         this.bitCount = 0;
         this.byteIndex = 0;
+        this.padBits = 0;
+    }
+    
+    /**
+     * Clear the last bit in this BitString.
+     */
+    public void removeLast() {
+        if (bitCount == 0) {
+            return;
+        }
+        byteIndex = (int)((bitCount - 1) / 8);
+        byteArray[byteIndex] = (byte)(byteArray[byteIndex] >> 1);
+        bitCount = bitCount - 1;
     }
     
     private void checkSize() {
