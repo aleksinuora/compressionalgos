@@ -39,6 +39,12 @@ public class Logic {
             case "2":
                 HuffDecompress();
                 return true;
+            case "3":
+                LZWCompress();
+                return true;
+            case "4":
+                LZWDecompress();
+                return true;
         }
         
         return true;
@@ -46,7 +52,7 @@ public class Logic {
     
     private void HuffCompress() {
         Huffman huffman = new Huffman(io.readBytesFromFile(source), source);
-        io.writeByteArrayToFile(output.concat(".hf"), huffman.compress());
+        io.writeByteArrayToFile((output + ".hf"), huffman.compress());
     }
     
     private void HuffDecompress() {
@@ -54,6 +60,18 @@ public class Logic {
         huffman.decompress();
         byte[] byteArray = huffman.buildByteArray();
         io.writeByteArrayToFile(output.concat(huffman.getFileType()), byteArray);
+    }
+    
+    private void LZWCompress() {
+        LZW lzw = new LZW(io.readBytesFromFile(source), source);
+        io.writeByteArrayToFile(output + ".lzw", lzw.compress());
+    }
+    
+    private void LZWDecompress() {
+        LZW lzw = new LZW(io.readBytesFromFile(source), source);
+        lzw.decompress();
+        byte[] byteArray = lzw.getOutPut();
+        io.writeByteArrayToFile(output + (lzw.getFileType()), byteArray);
     }
     
     /**

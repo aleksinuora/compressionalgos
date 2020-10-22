@@ -57,6 +57,6 @@ public class HuffNode implements Comparable<HuffNode>{
      */
     @Override
     public int compareTo(HuffNode node) {
-        return (int)(this.freq - node.freq);
+        return Long.compare(this.freq, node.freq);
     }
 }

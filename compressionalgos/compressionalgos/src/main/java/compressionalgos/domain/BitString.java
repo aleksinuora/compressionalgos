@@ -33,7 +33,7 @@ public class BitString {
     
     /**
      * Constructs a byte array with the specified initial capacity.
-     * @param capacity initial capacity for the byte array
+     * @param capacity specifies an initial byte capacity for the BitString
      */
     public BitString(int capacity) {
         this.capacity = capacity;
@@ -45,7 +45,7 @@ public class BitString {
     
     /**
      * Constructs a BitString from the given byte array.
-     * @param byteArray this becomes the new BitString
+     * @param byteArray self-explanatory
      */
     public BitString(byte[] byteArray) {
         this.byteArray = byteArray;
@@ -94,7 +94,7 @@ public class BitString {
         // the shifted byte will have an odd value, i.e. (bits)mod2 == 1
         // -> add(true), and vice versa for 0 bit/even value.
         for (int i = 7; i >= 0; i--) {
-            add((byte)(bits >> i) % 2 == 1);
+            add(((bits & INTMASK) >> i) % 2 == 1);
         }
     }
     
@@ -104,7 +104,11 @@ public class BitString {
      */
     public void addInt(int bits) {
         for (int i = intTools.getBitCount(bits) - 1; i >= 0; i--) {
-            add(((bits & LONGMASK) >> i) % 2 == 1); 
+            if ((((bits & LONGMASK) >> i) % 2) == 1) {
+                this.add(true);
+            } else {
+                this.add(false);
+            }
         }
     }
     
@@ -128,14 +132,12 @@ public class BitString {
      * @return int value of this bit string
      */
     public int getInt() {
-        int value = 0;
-        byteIndex = (int)((bitCount - 1) / 8);
-        if (byteIndex > 3) {
-            byteIndex = 3;
-        }
-        for (int i = 0; i <= byteIndex; i++) {
-            value = value << 8;
-            value = (int)(value + (byteArray[i] & INTMASK));
+        int value = 0;        
+        for (int i = 0; i < intTools.min((int)bitCount, 32); i++) {
+            value = value << 1;
+            if (getBit(i)) {
+                value++;
+            }
         }
         return value;
     }
@@ -283,11 +285,11 @@ public class BitString {
     }
     
     /**
-     * Empty the whole BitString.
+     * Reset the whole BitString.
      */
     public void clear() {
-        this.capacity = 1;
-        this.byteArray = new byte[1];
+        this.capacity = 2;
+        this.byteArray = new byte[capacity];
         this.bitCount = 0;
         this.byteIndex = 0;
         this.padBits = 0;
@@ -354,5 +356,13 @@ public class BitString {
      */
     public int getPadBits() {
         return this.padBits;
+    }
+    
+    public String bytesToString() {
+        String string = "";
+        for (int i = 0; i < bitCount / 8; i++) {
+            string = string + (byteArray[i / 8] + " ");
+        }
+        return string;
     }
 }

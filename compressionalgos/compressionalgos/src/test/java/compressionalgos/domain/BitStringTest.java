@@ -6,6 +6,7 @@
 package compressionalgos.domain;
 
 import compressionalgos.domain.BitString;
+import compressionalgos.utility.*;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -19,6 +20,7 @@ import static org.junit.Assert.*;
  * @author aleksi
  */
 public class BitStringTest {
+    private IntTools intTools = new IntTools();
     private static String falseFail = "Should have been false but was true";
     private static String trueFail = "Should have been true but was false";
     
@@ -158,6 +160,12 @@ public class BitStringTest {
         }
         int exp = 8;
         assertEquals(exp, res);
+        BitString instance2 = new BitString();
+        byte bits2 = -86;
+        instance2.addWholeByte(bits2);
+        int res2 = (byte)instance2.getInt();
+        int exp2 = -86;
+        assertEquals(exp2, res2);
     }
     
     /**
@@ -167,7 +175,7 @@ public class BitStringTest {
     public void testAddInt_int() {
         System.out.println("addInt");
         int test = 0b11111111000000001111111100000000;
-        BitString instance = new BitString();
+        BitString instance = new BitString(4);
         instance.addInt(test);
         int res = 0;
         for (int i = 0; i < 32; i++) {
@@ -190,7 +198,7 @@ public class BitStringTest {
      */
     @Test
     public void testAddInt_int2() {
-        System.out.println("addInt");
+        System.out.println("addInt2");
         int test = 1;
         int res = 0;
         int res2 = 0;
@@ -211,17 +219,35 @@ public class BitStringTest {
     }
     
     /**
+     * Test of addInt method, of class BitString.
+     */
+    @Test
+    public void testAddInt_3() {
+        System.out.println("addInt3");
+        BitString instance = new BitString();
+        instance.addInt(259);
+        int res = instance.getInt();
+        int exp = 259;
+        assertEquals(exp, res);
+    }
+    
+    /**
      * Test of getInt method, of class BitString.
      */
     @Test
     public void testGetInt() {
-        System.out.println("getInt\n");
+        System.out.println("getInt");
         int test = 0b11111111000000001111111100000000;
         BitString instance = new BitString();
         instance.addInt(test);
         int res = instance.getInt();
         int exp = -16711936;
         assertEquals(exp, res);
+        BitString instance2 = new BitString();
+        instance2.addInt(Integer.MAX_VALUE);
+        int res2 = instance2.getInt();
+        int exp2 = Integer.MAX_VALUE;
+        assertEquals(exp2, res2);
     }
     
     /**
@@ -232,7 +258,7 @@ public class BitStringTest {
         System.out.println("addWholeByte_2");
         byte bits = 0b1;
         BitString instance = new BitString();
-        instance.addWholeByte(bits);
+        instance.addWholeByte((byte)bits);
         int res = 0;
         for (int i = 0; i < 7; i++) {
             if (!instance.getBit(i)) {
@@ -384,6 +410,39 @@ public class BitStringTest {
         byte expResult = -86;
         assertEquals(expResult, result);
     }
+    
+    /**
+     * Test of concatenate method, of class BitString.
+     */
+    @Test
+    public void testConcatenate() {
+        System.out.println("concatenate");
+        BitString instance = new BitString();
+        BitString temp = new BitString();
+        temp.addInt(Integer.MAX_VALUE);
+        instance.concatenate(temp);
+        int res = instance.getInt();
+        int exp = Integer.MAX_VALUE;
+        assertEquals(exp, res);
+    }
+    /**
+     * Test of concatenate method, of class BitString.
+     */
+    @Test
+    public void testConcatenate2() {
+        System.out.println("concatenate2");
+        BitString instance = new BitString();
+        BitString temp = new BitString();
+        for (int i = 0; i < 99999; i++) {
+            temp.addInt(i);
+        }
+        instance.concatenate(temp);
+        byte[] res = instance.getArray(true);
+        byte[] exp = temp.getArray(true);
+        byte[] empty = new byte[0];
+        assertArrayEquals(exp, res);
+        assertFalse(Arrays.equals(empty, res));
+    }
 
     /**
      * Test of clear method, of class BitString.
@@ -398,7 +457,7 @@ public class BitStringTest {
         instance.clear();
         assert(instance.length() == 0);
         assert(instance.getBitCount() == 0);
-        assert(instance.getArray(false).length == 1);
+        assert(instance.getArray(false).length == 2);
     }
     
     /**

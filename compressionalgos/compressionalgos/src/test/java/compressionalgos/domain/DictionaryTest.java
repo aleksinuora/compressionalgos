@@ -17,12 +17,19 @@ import static org.junit.Assert.*;
  * @author aleksi
  */
 public class DictionaryTest {
+    private static Dictionary largeDictionary1 = new Dictionary();
+    private static Dictionary largeDictionary2 = new Dictionary();
+    private static int largeSize = 9999;
     
     public DictionaryTest() {
     }
     
     @BeforeClass
     public static void setUpClass() {
+        for (int i = 0; i < largeSize; i++) {
+            largeDictionary1.add(0b11111111 + i, 255 + i);
+            largeDictionary2.add(255 + i, 0b11111111 + i);
+        }
     }
     
     @AfterClass
@@ -44,13 +51,13 @@ public class DictionaryTest {
     public void testAdd() {
         System.out.println("add");
         Dictionary instance = new Dictionary();
-        int exp = 1224;
+        int exp = 10000;
         for (int i = 0; i < exp; i++) {
             instance.add(i * 256, i);
         }
         int res = 0;
         for (int i = 0; i < exp; i++) {
-            if (instance.getCode(i * 256) == i) {
+            if (instance.getValue(i * 256) == i) {
                 res++;
             }
         }
@@ -64,20 +71,25 @@ public class DictionaryTest {
     public void testGetValue() {
         System.out.println("getCode");
         Dictionary instance = new Dictionary();
-        int exp = 12;
+        int exp = 10000;
         for (int i = 0; i < exp; i++) {
             instance.add(i * 256, i);
         }
         int res = 0;
         for (int i = 0; i < exp; i++) {
-            if (instance.getCode(i * 256) == i) {
+            if (instance.getValue(i * 256) == i) {
                 res++;
             }
         }
         assertEquals(exp, res);
         int exp2 = 1;
-        int res2 = instance.getCode(exp2);
+        int res2 = instance.getValue(exp2);
         assertEquals(exp2, res2);
     }
+    
+    /**
+     * Test of getString method, of class Dictionary.
+     */
+    
     
 }

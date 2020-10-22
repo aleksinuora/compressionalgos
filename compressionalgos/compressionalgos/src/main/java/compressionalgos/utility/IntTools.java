@@ -27,4 +27,32 @@ public class IntTools {
         }
         return bits;
     }
+    
+    /**
+     * Compare two values and return the larger one.
+     * @param a value 1
+     * @param b value 2
+     * @return the larger value
+     */
+    public int max(int a, int b) {
+        if (a >= b) {
+            return a;
+        } else {
+            return b;
+        }
+    }
+    
+    /**
+     * Compare two values and return the smaller one.
+     * @param a value 1
+     * @param b value 2
+     * @return the smaller value
+     */
+    public int min(int a, int b) {
+        if (a <= b) {
+            return a;
+        } else {
+            return b;
+        }
+    }
 }

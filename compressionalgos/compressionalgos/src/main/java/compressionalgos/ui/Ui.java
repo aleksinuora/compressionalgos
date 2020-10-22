@@ -14,7 +14,7 @@ import java.util.*;
 public class Ui {
     // for testing purposes
     // feel free to change the file paths --
-    static String testSource = "src/main/java/testing/simpleTextFile.txt";
+    static String testSource = "src/main/java/testing/imageSampleBW.jpg";
     static String testDest = "src/main/java/testing/testFileOut";
     static String testDecDest = "src/main/java/testing/testFileBack";
     static boolean full = true;
@@ -25,7 +25,8 @@ public class Ui {
     
     /**
      * 
-     * @param scanner
+     * @param scnr
+     * @param bln
      * @param logic
      */
     public Ui(Scanner scanner, Logic logic, boolean full) {
@@ -45,7 +46,10 @@ public class Ui {
             String source = scanner.nextLine();
             logic.setSource(source);
             System.out.println("Available algorithms: (1) Huffman compress"
-                    + "\n (2) Huffman decompress");
+                    + "\n (2) Huffman decompress" 
+                    + "\n (3) LZW compress" 
+                    + "\n (4) LWZ decompress" 
+                    + "\n (9) Run performance tests");
             String algoChoice = scanner.nextLine();
             System.out.println("Output path: ");
             String output = scanner.nextLine();
@@ -55,7 +59,7 @@ public class Ui {
             logic.setSource(testSource);
             logic.setOutput(testDest);
             logic.runAlgo("1");
-            logic.setSource(testDest.concat(".hf"));
+            logic.setSource(testDest + ".hf");
             logic.setOutput(testDecDest);
             logic.runAlgo("2");
         }

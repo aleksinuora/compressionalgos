@@ -24,7 +24,7 @@ public class QNode<E extends Comparable<E>> {
     
     /**
      * Constructs a node out of the given object.
-     * @param object
+     * @param object self-explanatory
      */
     public QNode (E object) {
         this.object = object;

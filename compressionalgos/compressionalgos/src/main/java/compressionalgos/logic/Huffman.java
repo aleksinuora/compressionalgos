@@ -83,7 +83,7 @@ public class Huffman {
         for (int i = 0; i < freqMap.length; i++) {
             if (freqMap[i] > 0) {
                 HuffNode node = new HuffNode();
-                node.value = (byte)i;
+                node.value = (byte)(i & 0xFF);
                 node.freq = freqMap[i];
                 nodeQueue.put(node);
             }
@@ -114,9 +114,10 @@ public class Huffman {
             // Write 0 to mark leaf node, followed by byte value of node in 8 bits
             binTree.add(false);            
             // Convert node's byte value into bit string and append it to binCode
-            binTree.addWholeByte(node.value);
-            dictionary[(node.value & 0xFF)] = new BitString();
-            dictionary[(node.value & 0xFF)].concatenate(codeword);
+            binTree.addWholeByte((byte)(node.value & 0xFF));
+            int index = (node.value & 0xFF);
+            dictionary[index] = new BitString();
+            dictionary[index].concatenate(codeword);
             return;
         }
         // Add 1 to tree binary if node is internal
