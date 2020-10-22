@@ -5,12 +5,15 @@
  */
 package compressionalgos.logic;
 import compressionalgos.io.Io;
+import compressionalgos.utility.StringTools;
 
 /**
  * Software logic class
  * @author aleksi
  */
 public class Logic {
+    private final StringTools stringTools = new StringTools();
+    private String testPath = "src/main/java/testing/";
     private String source;
     private String output;
     private Io io;
@@ -45,6 +48,8 @@ public class Logic {
             case "4":
                 LZWDecompress();
                 return true;
+            case "9":
+                performanceTesting();
         }
         
         return true;
@@ -72,6 +77,122 @@ public class Logic {
         lzw.decompress();
         byte[] byteArray = lzw.getOutPut();
         io.writeByteArrayToFile(output + (lzw.getFileType()), byteArray);
+    }
+    
+    private void performanceTesting() {
+        boolean del = true;
+        long[][] results = new long[8][6];
+        long[] averages = new long[6];
+        results[0] = testFile("test1.txt", del);                
+        results[1] = testFile("test2.txt", del);        
+        results[2] = testFile("test3.txt", del);        
+        results[3] = testFile("test4.txt", del);        
+        results[4] = testFile("alice29.txt", del);        
+        results[5] = testFile("plrabn12.txt", del);        
+        results[6] = testFile("Huffman_tree_2.png", del);        
+        results[7] = testFile("imageSampleBW.jpg", del);
+        
+        for (int i = 3; i < 6; i++) {
+            for (int j = 0; j < 6; j++) {
+                averages[i] += results[j][i];
+            }
+            averages[i] /= 6;
+        }
+        
+        averages[2] = 0;
+        for (int i = 0; i < 8; i++) {
+            averages[2] = averages[2] + results[i][2];
+        }
+        
+        System.out.println("\n####################\n"
+                            + "# Compiled results #\n"
+                            + "####################\n\n"
+                            + averages[2] + " files out of 8 succesfully compressed and decompressed.\n"
+                            + "\n*The next values are only for the first six text files.\n"
+                            + "The .png and .jpg files were tested mostly to see if they\n"
+                            + " would work at all. Given how efficiently compressed the formats\n"
+                            + " already are, there's little point in benchmarking with them.*\n\n"
+                            + "Average space reduction: " + averages[3] + "%.\n"
+                            + "Average speed to compress: " + averages[4] + "ns/byte.\n"
+                            + "Average speed to decompress: " + averages[5] + "ns/byte.\n"
+                            + "\nEfficiencies by various input size categories"
+                            + "\n#################################\n"
+                            + "input size (bytes)       | " + results[0][6] + " | " 
+                            + results[1][6] + " |" + results[2][6] + " | " 
+                            + results[3][6] + " |\n-----------------------------"
+                            + "------------------------------\n"
+                            + "comp speed (ns/byte)     | " + results[0][4] 
+                            + "    " + results[1][4] + "    " + results[2][4] 
+                            + "      " + results[3][4] + "\n" 
+                            + "decomp speed (ns/byte)   | " + results[0][5] 
+                            + "    " + results[1][5] + "    " + results[2][5] 
+                            + "     " + results[3][5] + "\n"
+                            + "space reduction (%)      |  " + results[0][3] 
+                            + "    " + results[1][3] + "    " + results[2][3] 
+                            + "     " + results[3][3]);
+    }
+    
+    /*
+    results[i] =
+    0: time to compress
+    1: time to decompress
+    2: verify files, 0 for failure, 1 for success
+    3: space reduction
+    4: speed/byte to compress
+    5: speed/byte to decompress
+    6: input size
+    */
+    private long[] testFile(String source, boolean deleteTemps) {
+        long[] results = new long[7];
+        setOutput(testPath + "tempComp");
+        setSource(testPath + source);
+        System.out.println("\n>Testing file: [" + source + "] in folder: [" 
+                + testPath + "]");
+        System.out.print("Huffman compression:\n");
+        long t1 = 0;
+        long t2 = System.nanoTime();
+        HuffCompress();
+        t1 = System.nanoTime();
+        long deltaT1 = t1 - t2;
+        System.out.println("  " + deltaT1 + "ns to compress");
+        results[0] = deltaT1;
+        System.out.print("Huffman decompress:\n");
+        setSource(testPath + "tempComp.hf");
+        setOutput(testPath + "tempDec");
+        t2 = System.nanoTime();
+        HuffDecompress();
+        t1 = System.nanoTime();
+        long deltaT2 = t1 - t2;
+        System.out.println("  " + deltaT2 + "ns to decompress");
+        results[1] = deltaT2;
+        System.out.print("Verifying file: ");
+        if (io.filesMatch(testPath + "tempDec" + stringTools.getSuffix(source), testPath + source)) {
+            System.out.println("decompressed file matches original");
+            results[2] = 1;
+        } else {
+            System.out.println("bad match, something went wrong");
+            results[2] = 0;
+        }
+        long size1 = io.getFileSize(testPath + source);
+        long size2 = io.getFileSize(testPath + "tempComp.hf");
+        long compression = size1 * 100 / size2;
+        System.out.println("Original size:\n  " + size1 + " bytes");
+        System.out.println("Compressed size:\n  " + size2 + " bytes");
+        System.out.println("Space efficiency:\n  " + (size1 - size2) + " bytes (" 
+                + compression + "% compression)");
+        results[3] = compression;
+        long compTime = deltaT1 / size1;
+        long decTime = deltaT2 / size2;
+        System.out.println("Time efficiency:\n  " + compTime 
+                + "ns/byte to compress,\n  " + decTime + "ns/byte to decompress");
+        results[4] = compTime;
+        results[5] = decTime;
+        results[6] = size1;
+        if (deleteTemps) {
+            io.deleteTempFiles(testPath + "tempComp.hf");
+            io.deleteTempFiles(testPath + "tempDec" + stringTools.getSuffix(source));
+        }
+        return results;
     }
     
     /**

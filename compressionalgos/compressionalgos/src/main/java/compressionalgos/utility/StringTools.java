@@ -46,4 +46,9 @@ public class StringTools {
         }
         return sArray;
     }
+    
+    public String getSuffix(String string) {
+        String[] temp = split(string, '.', true);
+        return temp[temp.length - 1];
+    }
 }

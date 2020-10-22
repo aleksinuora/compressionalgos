@@ -247,7 +247,28 @@ public class BitStringTest {
         instance2.addInt(Integer.MAX_VALUE);
         int res2 = instance2.getInt();
         int exp2 = Integer.MAX_VALUE;
-        assertEquals(exp2, res2);
+        assertEquals(exp2, res2);        
+        byte test3 = 97;
+        BitString instance3 = new BitString();
+        instance3.addWholeByte(test3);
+        instance3.addWholeByte(test3);
+        String exp3 = "0:97 1:97 ";
+        String res3 = instance3.bytesToString();
+        
+        System.out.println("");
+        for (int i = 0; i < instance3.getBitCount(); i++) {
+            if (instance3.getBit(i)) {
+                System.out.print("1");
+            } else {
+                System.out.print("0");
+            }
+        }
+        System.out.println("");
+        
+        assertEquals(exp3, res3);
+        int exp4 = 24929;
+        int res4 = instance3.getInt();
+        assertEquals(exp4, res4);
     }
     
     /**

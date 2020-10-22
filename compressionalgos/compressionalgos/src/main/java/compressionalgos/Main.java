@@ -17,6 +17,7 @@ public class Main {
      * @param args -f for full functionality
      */
     public static void main(String[] args) {
+        // Set to false if you want to skip the Ui and use hardcoded inputs.
         boolean full = false;
         if (args.length > 0) {
             full = args[0].equals("-f");

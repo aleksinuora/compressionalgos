@@ -14,10 +14,10 @@ import java.util.*;
 public class Ui {
     // for testing purposes
     // feel free to change the file paths --
-    static String testSource = "src/main/java/testing/imageSampleBW.jpg";
+    static String testSource = "src/main/java/testing/Latin-Lipsum.txt";
     static String testDest = "src/main/java/testing/testFileOut";
     static String testDecDest = "src/main/java/testing/testFileBack";
-    static boolean full = true;
+    private boolean full;
     // -- for testing purposes
     
     Scanner scanner;
@@ -42,26 +42,32 @@ public class Ui {
         // The scanner class seems to sometimes interact badly with gradle and 
         // NetBeans. 
         if (full) {
-            System.out.println("Source path: ");
-            String source = scanner.nextLine();
-            logic.setSource(source);
             System.out.println("Available algorithms: (1) Huffman compress"
                     + "\n (2) Huffman decompress" 
                     + "\n (3) LZW compress" 
                     + "\n (4) LWZ decompress" 
                     + "\n (9) Run performance tests");
             String algoChoice = scanner.nextLine();
-            System.out.println("Output path: ");
-            String output = scanner.nextLine();
-            logic.setOutput(output);
+            if (algoChoice.equals("9")) {
+                System.out.println("\nRunning performance tests");
+                logic.runAlgo(algoChoice);
+            } else {
+                System.out.println("Source path: ");
+                String source = scanner.nextLine();
+                logic.setSource(source);
+                System.out.println("Output path: ");
+                String output = scanner.nextLine();
+                logic.setOutput(output);
+                logic.runAlgo(algoChoice);
+            }
         }
+        // Set full to false in Main if you want to skip the Ui and use hard coded
+        // values for testing etc.
         if (!full) {
-            logic.setSource(testSource);
-            logic.setOutput(testDest);
-            logic.runAlgo("1");
-            logic.setSource(testDest + ".hf");
-            logic.setOutput(testDecDest);
-            logic.runAlgo("2");
+            logic.runAlgo("9");
+//            logic.setSource(testDest + ".lzw");
+//            logic.setOutput(testDecDest);
+//            logic.runAlgo("4");
         }
     }
 }

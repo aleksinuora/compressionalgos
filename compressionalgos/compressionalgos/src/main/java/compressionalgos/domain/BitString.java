@@ -94,7 +94,18 @@ public class BitString {
         // the shifted byte will have an odd value, i.e. (bits)mod2 == 1
         // -> add(true), and vice versa for 0 bit/even value.
         for (int i = 7; i >= 0; i--) {
-            add(((bits & INTMASK) >> i) % 2 == 1);
+            add((((bits & INTMASK) >> i) % 2) != 0);
+        }
+    }
+    
+    /**
+     * addWholeByte but also accepts int as input. Adds the first 8 bits of an
+     * int value, fills the rest with leading zeroes if necessary.
+     * @param bits 
+     */
+    public void addWholeByte(int bits) {
+        for (int i = 7; i >= 0; i--) {
+            add((bits >> i) % 2 != 0);
         }
     }
     
@@ -119,7 +130,7 @@ public class BitString {
      * @param byteSize desired byte size
      */
     public void addInt(int bits, int byteSize) {
-        int zeroes = byteSize - intTools.getBitCount(bits);
+        int zeroes = byteSize - this.intTools.getBitCount(bits);
         for (int i = 0; i < zeroes; i++) {
             add(false);
         }
@@ -133,7 +144,7 @@ public class BitString {
      */
     public int getInt() {
         int value = 0;        
-        for (int i = 0; i < intTools.min((int)bitCount, 32); i++) {
+        for (int i = 0; i < this.intTools.min((int)this.bitCount, 32); i++) {
             value = value << 1;
             if (getBit(i)) {
                 value++;
@@ -361,7 +372,22 @@ public class BitString {
     public String bytesToString() {
         String string = "";
         for (int i = 0; i < bitCount / 8; i++) {
-            string = string + (byteArray[i / 8] + " ");
+            string = string + i + ":" + (byteArray[i / 8] + " ");
+        }
+        return string;
+    }
+    
+    public String bitsToString() {
+        String string = "";
+        for (long i = 1; i <= bitCount; i++) {
+            if (this.getBit(i - 1)) {
+                string = string + "1";
+            } else {
+                string = string + "0";
+            }
+            if (i % 8 == 0 && i > 0) {
+                string = string + ":";
+            }
         }
         return string;
     }

@@ -16,7 +16,7 @@ import compressionalgos.utility.*;
  * @author aleksi
  */
 public class LZW {
-    private final static boolean debug = false;
+    private final static boolean debug = true;
     private final static long LONGMASK = 0xFFFFFFFFL;
     private final StringTools stringTools = new StringTools();
     private final IntTools intTools = new IntTools();
@@ -122,19 +122,19 @@ public class LZW {
                     dictionaryIndex++;
                     byteSize++;
                     
-                    if (debug) {
-                        System.out.println("byte size increased, code was: " + nextCode);
-                    }
+//                    if (debug) {
+//                        System.out.println("byte size increased, code was: " + nextCode);
+//                    }
                     
                 }               
                 output.concatenate(buffer);
                 
-                if (debug)
-                    {
-                    System.out.println("output: " + (buffer.getInt()) 
-                            + ", byte size: " + buffer.getBitCount() 
-                            + ", dictionary index: " + dictionaryIndex);
-                }
+//                if (debug)
+//                    {
+//                    System.out.println("output: " + (buffer.getInt()) 
+//                            + ", byte size: " + buffer.getBitCount() 
+//                            + ", dictionary index: " + dictionaryIndex);
+//                }
                 
                 buffer.clear();
                 buffer.addWholeByte(bytes[i]);
@@ -254,7 +254,15 @@ public class LZW {
                 // 3. Output the string derived from the new value, 
                 //  clean up and continue.
                 dictionaryIndex--;
-                buffer.addWholeByte((byte)dictionary.getValue(dictionaryIndex));                
+                
+//                System.out.println(buffer.getInt() + ";" + buffer.getBitCount() + " bits: " + buffer.bitsToString());
+                buffer.addWholeByte((dictionary.getString(buffer.getInt())).getInt());
+                
+//                System.out.println("dictionary value: " + dictionary.getValue(dictionaryIndex) + ", index: " + dictionaryIndex);
+//                
+//                System.out.println("bits now: " + buffer.bitsToString());
+//                System.out.println("int: " + buffer.getInt() + ", bytes: " + buffer.bytesToString() + "" + buffer.getBitCount());
+                
                 dictionary.add(nextCode.getInt(), buffer.getInt());
                 dictionaryIndex += 2;
                 buffer.clear();
@@ -290,6 +298,11 @@ public class LZW {
             }
             nextCode.clear();
             nextString.clear();
+        }
+        
+        if (debug) {
+            int key = 278;
+            System.out.println("Dictionary value for " + key + ": " + dictionary.getString(key).bitsToString());
         }
     }
 
