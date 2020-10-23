@@ -13,7 +13,7 @@ import compressionalgos.utility.StringTools;
  */
 public class Logic {
     private final StringTools stringTools = new StringTools();
-    private String testPath = "src/main/java/compressionalgos/testing/";
+    private String testPath = "testing/";
     private String source;
     private String output;
     private Io io;
@@ -34,7 +34,7 @@ public class Logic {
      */
     public boolean runAlgo(String choice) {
         switch (choice) {
-            case "0": 
+            case "0":
                 return false;
             case "1": 
                 HuffCompress();
@@ -64,34 +64,54 @@ public class Logic {
         Huffman huffman = new Huffman(io.readBytesFromFile(source), source);
         huffman.decompress();
         byte[] byteArray = huffman.buildByteArray();
-        io.writeByteArrayToFile(output.concat(huffman.getFileType()), byteArray);
+        io.writeByteArrayToFile((output + (huffman.getFileType())), byteArray);
     }
     
     private void LZWCompress() {
         LZW lzw = new LZW(io.readBytesFromFile(source), source);
-        io.writeByteArrayToFile(output + ".lzw", lzw.compress());
+        io.writeByteArrayToFile((output + ".lzw"), lzw.compress());
     }
     
     private void LZWDecompress() {
         LZW lzw = new LZW(io.readBytesFromFile(source), source);
         lzw.decompress();
         byte[] byteArray = lzw.getOutPut();
-        io.writeByteArrayToFile(output + (lzw.getFileType()), byteArray);
+        io.writeByteArrayToFile((output + (lzw.getFileType())), byteArray);
     }
     
+//    #######################
+//    # Performance testing #
+//    #######################
     private void performanceTesting() {
+        long[][] test1;
+        long[][] test2;
+        test1 = testAlgorithm("LZW");
+        test2 = testAlgorithm("Huffman");
+        System.out.println("\nLZW compilation");
+        printResults(test1);
+        System.out.println("\nHuffman compilation");
+        printResults(test2);
+    }
+    
+    private long[][] testAlgorithm(String algorithm) {
+        // Set to true to delete temporary files after testing.
         boolean del = true;
         long[][] results = new long[8][6];
         long[] averages = new long[6];
-        results[0] = testFile("test1.txt", del);                
-        results[1] = testFile("test2.txt", del);        
-        results[2] = testFile("test3.txt", del);        
-        results[3] = testFile("test4.txt", del);        
-        results[4] = testFile("alice29.txt", del);        
-        results[5] = testFile("plrabn12.txt", del);        
-        results[6] = testFile("Huffman_tree_2.png", del);        
-        results[7] = testFile("imageSampleBW.jpg", del);
+        results[0] = testFile("test1.txt", algorithm, del);                
+        results[1] = testFile("test2.txt", algorithm, del);        
+        results[2] = testFile("test3.txt", algorithm, del);        
+        results[3] = testFile("test4.txt", algorithm, del);        
+        results[4] = testFile("alice29.txt", algorithm, del);        
+        results[5] = testFile("plrabn12.txt", algorithm, del);        
+        results[6] = testFile("Huffman_tree_2.png", algorithm, del);        
+        results[7] = testFile("imageSampleBW.jpg", algorithm, del);
         
+        return results;
+    }
+    
+    private void printResults(long[][] results) {
+        long[] averages = new long[6];
         for (int i = 3; i < 6; i++) {
             for (int j = 0; j < 6; j++) {
                 averages[i] += results[j][i];
@@ -104,7 +124,7 @@ public class Logic {
             averages[2] = averages[2] + results[i][2];
         }
         
-        System.out.println("\n####################\n"
+        System.out.println(   "####################\n"
                             + "# Compiled results #\n"
                             + "####################\n\n"
                             + averages[2] + " files out of 8 succesfully compressed and decompressed.\n"
@@ -116,7 +136,7 @@ public class Logic {
                             + "Average speed to compress: " + averages[4] + "ns/byte.\n"
                             + "Average speed to decompress: " + averages[5] + "ns/byte.\n"
                             + "\nEfficiencies by various input size categories"
-                            + "\n#################################\n"
+                            + "\n#############################################\n"
                             + "input size (bytes)       | " + results[0][6] + " | " 
                             + results[1][6] + " |" + results[2][6] + " | " 
                             + results[3][6] + " |\n-----------------------------"
@@ -142,39 +162,54 @@ public class Logic {
     5: speed/byte to decompress
     6: input size
     */
-    private long[] testFile(String source, boolean deleteTemps) {
+    private long[] testFile(String sourceFile, String algorithm, boolean deleteTemps) {
         long[] results = new long[7];
         setOutput(testPath + "tempComp");
-        setSource(testPath + source);
-        System.out.println("\n>Testing file: [" + source + "] in folder: [" 
+        setSource(testPath + sourceFile);
+        System.out.println("\n>Testing file: [" + sourceFile + "] in folder: [" 
                 + testPath + "]");
-        System.out.print("Huffman compression:\n");
+        System.out.print(algorithm + " compression:\n");
         long t1 = 0;
         long t2 = System.nanoTime();
-        HuffCompress();
+        if (algorithm == "Huffman") {
+            HuffCompress();
+        } else if (algorithm == "LZW") {
+            LZWCompress();
+        }
         t1 = System.nanoTime();
         long deltaT1 = t1 - t2;
         System.out.println("  " + deltaT1 + "ns to compress");
         results[0] = deltaT1;
-        System.out.print("Huffman decompress:\n");
-        setSource(testPath + "tempComp.hf");
+        System.out.print(algorithm + " decompression:\n");
+        String suffix = "";
+        if (algorithm == "Huffman") {
+            suffix = ".hf";
+        } else if (algorithm == "LZW") {
+            suffix = ".lzw";
+        }
+        setSource(testPath + "tempComp" + suffix);
         setOutput(testPath + "tempDec");
         t2 = System.nanoTime();
-        HuffDecompress();
+        if (algorithm == "Huffman") {
+            HuffDecompress();
+        } else if (algorithm == "LZW") {
+            LZWDecompress();
+        }
         t1 = System.nanoTime();
         long deltaT2 = t1 - t2;
         System.out.println("  " + deltaT2 + "ns to decompress");
         results[1] = deltaT2;
-        System.out.print("Verifying file: ");
-        if (io.filesMatch(testPath + "tempDec" + stringTools.getSuffix(source), testPath + source)) {
-            System.out.println("decompressed file matches original");
+        String tempDecFile = "tempDec" + stringTools.getSuffix(sourceFile);
+        System.out.println("Verifying file, compare: " + tempDecFile + " against " + sourceFile + ": ");
+        if (io.filesMatch(testPath + tempDecFile, testPath + sourceFile)) {
+            System.out.println("    decompressed file matches original");
             results[2] = 1;
         } else {
             System.out.println("bad match, something went wrong");
             results[2] = 0;
         }
-        long size1 = io.getFileSize(testPath + source);
-        long size2 = io.getFileSize(testPath + "tempComp.hf");
+        long size1 = io.getFileSize(testPath + sourceFile);
+        long size2 = io.getFileSize(testPath + "tempComp" + suffix);
         long compression = size1 * 100 / size2;
         System.out.println("Original size:\n  " + size1 + " bytes");
         System.out.println("Compressed size:\n  " + size2 + " bytes");
@@ -189,12 +224,15 @@ public class Logic {
         results[5] = decTime;
         results[6] = size1;
         if (deleteTemps) {
-            io.deleteTempFiles(testPath + "tempComp.hf");
-            io.deleteTempFiles(testPath + "tempDec" + stringTools.getSuffix(source));
+            io.deleteTempFiles(testPath + "tempComp" + suffix);
+            io.deleteTempFiles(testPath + "tempDec" + stringTools.getSuffix(sourceFile));
         }
         return results;
     }
     
+//    #######################
+//    # Getters and setters #
+//    #######################
     /**
      * Set source file path
      * @param source file path

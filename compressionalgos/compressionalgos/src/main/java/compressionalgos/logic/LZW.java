@@ -16,7 +16,8 @@ import compressionalgos.utility.*;
  * @author aleksi
  */
 public class LZW {
-    private final static boolean debug = false;
+    private final static boolean debug1 = false;
+    private final static boolean debug2 = false;
     private final static long LONGMASK = 0xFFFFFFFFL;
     private final StringTools stringTools = new StringTools();
     private final IntTools intTools = new IntTools();
@@ -117,7 +118,7 @@ public class LZW {
                     // a prepended 1, so let's write (byteSize + 1) * (1).
                     for (int j = 0; j < byteSize + 1; j++) {
                         
-                        if (debug) {
+                        if (debug1) {
                             System.out.print("1");
                         }
                         
@@ -126,7 +127,7 @@ public class LZW {
                     dictionaryIndex++;
                     byteSize++;
                     
-                    if (debug) {
+                    if (debug2) {
                         System.out.println("\nbyte size increased, next index: " + dictionaryIndex + " new byteSize: " + byteSize);
                     }
                     
@@ -156,7 +157,7 @@ public class LZW {
         padBits = output.getPadBits();
         output.addWholeByte(padBits);
         
-        if (debug) {
+        if (debug2) {
             System.out.println("Final dI after comp: " + dictionaryIndex);
         }
     }
@@ -189,18 +190,16 @@ public class LZW {
             (byte)0b01011010,
             (byte)0b01010111
         };
-        filetype = "."; 
+        byte[] fileType = new byte[3];
         for (int i = 0; i < 3; i++) {
             if (bytes[i] != expected[i]) {
                 throw new Exception("Not a valid LZW file");
             }
             if (bytes[i] != 0) {
-                filetype = filetype + (char)bytes[i + 3];
+                fileType[i] = bytes[i + 3];
             }
         }
-        if (filetype.length() == 1) {
-            filetype = "";
-        }
+        filetype = "." + new String(fileType);
         // Read the number of padded zeros from the last byte.
         padBits = bytes[bytes.length - 1];
     }
@@ -247,16 +246,18 @@ public class LZW {
                 // 1. Check for byte size increment code ([byteSize] long 
                 //  series of 1-bits).
                 // 2. If there's a byte size increment, clear nextCode and continue.
-                if (increaseByteSize(nextCode)) {
+                if (increaseByteSize(nextCode, byteSize)) {
                     
-                    if (debug) {
-                        System.out.println("\nnC: " + nextCode.bitsToString() + "Byte size increased \n");
+                    if (debug2) {
+                        System.out.print("\nnC: " + nextCode.bitsToString() + " Byte size increased, new byte size: ");
+                    }                    
+                    
+                    byteSize++;
+                    
+                    if (debug2) {
+                        System.out.println(byteSize + "\n");;
                     }
                     
-                    bitIndex += byteSize;
-                    if (byteSize < 15) {
-                        byteSize++;
-                    }
                     nextCode.clear();
                     dictionaryIndex++;
                     continue;
@@ -275,8 +276,12 @@ public class LZW {
                 // But first: if current dictionaryIndex is at maximum value for
                 // curent byteSize range (i.e.: n ones where n is byteSize), 
                 // roll back to previous index.
-                if (intTools.getBitCount(dictionaryIndex + 1) >= byteSize) {
+                if (intTools.getBitCount(dictionaryIndex + 1) > byteSize) {
                     dictionaryIndex--;
+                    
+                    if (debug2) {
+                        System.out.println("dictionary rollback at " + dictionaryIndex);
+                    }
                 }
                 // If the previous index is < 256, no entries have been added
                 // -> the previous value we are looking for can only be a raw 
@@ -289,14 +294,19 @@ public class LZW {
                     buffer.addWholeByte((dictionary.getValue(dictionaryIndex - 1)));
                 }                
                 dictionary.add(nextCode.getInt(), buffer.getInt());
+                
+                if (debug1) {
+                    System.out.println("\ne" + nextCode.getInt() + ":" + buffer.bitsToString() + " added to dictionary");
+                }
+                
                 dictionaryIndex++;
                 buffer.clear();
                 buffer.concatenate(nextCode);
                 nextCode.clear();
                 output.concatenate(dictionary.getString(buffer.getInt()));
                 
-                if (debug) {
-                    System.out.println("\nException, buffer: " 
+                if (debug1) {
+                    System.out.println("Exception, buffer: " 
                             + buffer.getInt()); 
                 }                               
                 continue;
@@ -315,9 +325,11 @@ public class LZW {
                 buffer.clear();
                 buffer.concatenate(nextCode);
             } else {
-                dictionary.add(dictionaryIndex++, buffer.getInt());
+                if (!(intTools.getBitCount(dictionaryIndex + 1) > 15)) {
+                    dictionary.add(dictionaryIndex++, buffer.getInt());
+                }
                 
-                if (debug) {
+                if (debug1) {
                     System.out.println((dictionaryIndex - 1) + ":" + buffer.bitsToString() + " added to dictionary");
                 }
                 
@@ -326,7 +338,7 @@ public class LZW {
                 buffer.concatenate(nextCode);
             }
             
-            if (debug) {
+            if (debug1) {
                 System.out.println("nC: " + nextCode.getInt() + " nS: " + nextString.getInt() 
                         + ", buffer: " + buffer.getInt() + ", byte: " 
                         + (bitIndex / 8) + "." + (bitIndex % 8) 
@@ -336,17 +348,18 @@ public class LZW {
             nextString.clear();
         }
         
-        if (debug) {
-            int key = 443;
-            System.out.println("Dictionary entry for " + key + ": " + dictionary.getValue(key) + ":" + Integer.toBinaryString(dictionary.getValue(key)));
-            System.out.println("Dictionary value for " + key + ": " + dictionary.getString(key).bitsToString());
+        if (debug2) {
+            System.out.println("Final dI after decomp: " + dictionaryIndex);
+            int key = 32766;
+            System.out.println("Dictionary entry for " + key + " ([code]+[last byte]): " + dictionary.getValue(key) + ":" + Integer.toBinaryString(dictionary.getValue(key)));
+            System.out.println("Dictionary value for " + key + "([full bytes]): " + dictionary.getString(key).bitsToString());
             int value = 0b0100010101110100;
             System.out.println("Dictionary key for value " + value + ": " + dictionary.getKey(value));
         }
     }
 
-    private boolean increaseByteSize(BitString code) {
-        for (int i = 0; i < code.getBitCount(); i++) {
+    private boolean increaseByteSize(BitString code, int byteSize) {
+        for (int i = 0; i < byteSize; i++) {
             if (!code.getBit(i)) {
                 return false;
             }
@@ -364,7 +377,7 @@ public class LZW {
     
     private byte[] buildOutputArray() {
         byte[] outputBytes = new byte[(int)(output.getBitCount() / 8)];
-        byte[] temp = output.getArray(false);
+        byte[] temp = output.getArray(true);
         for (int i = 0; i < outputBytes.length; i++) {
             outputBytes[i] = temp[i];
         }

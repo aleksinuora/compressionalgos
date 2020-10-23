@@ -60,3 +60,4 @@ jar {
         attributes 'Main-Class': 'compressionalgos.Main'
     }
 }
+

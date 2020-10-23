@@ -14,9 +14,9 @@ import java.util.*;
 public class Ui {
     // for testing purposes
     // feel free to change the file paths --
-    static String testSource = "src/main/java/compressionalgos/testing/smallerSample.txt";
-    static String testDest = "src/main/java/compressionalgos/testing/testFileOut";
-    static String testDecDest = "src/main/java/compressionalgos/testing/testFileBack";
+    static String testSource = "testing/alice29.txt";
+    static String testDest = "testing/testFileOut";
+    static String testDecDest = "testing/testFileBack";
     private boolean full;
     // -- for testing purposes
     
@@ -46,11 +46,14 @@ public class Ui {
                     + "\n (2) Huffman decompress" 
                     + "\n (3) LZW compress" 
                     + "\n (4) LWZ decompress" 
-                    + "\n (9) Run performance tests");
+                    + "\n (9) Run performance tests"
+                    + "\n (0) To exit program");
             String algoChoice = scanner.nextLine();
             if (algoChoice.equals("9")) {
                 System.out.println("\nRunning performance tests");
                 logic.runAlgo(algoChoice);
+            } else if (algoChoice.equals("0")) {
+                System.out.println("Exiting.");
             } else {
                 System.out.println("Source path: ");
                 String source = scanner.nextLine();
@@ -64,6 +67,12 @@ public class Ui {
         // Set full to false in Main if you want to skip the Ui and use hard coded
         // values for testing etc.
         if (!full) {
+            System.out.println("Run with parameter '-f' or manually switch 'full'"
+                    + " in the main method to true"
+                    + "for full program. If no"
+                    + " parameters are "
+                    + "present, the program will run some algorithms with "
+                    + "preset dummy inputs and no outputs.\n");
             logic.setSource(testSource);
             logic.setOutput(testDest);
             logic.runAlgo("3");
