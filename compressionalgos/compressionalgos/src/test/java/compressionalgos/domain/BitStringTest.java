@@ -255,15 +255,7 @@ public class BitStringTest {
         String exp3 = "0:97 1:97 ";
         String res3 = instance3.bytesToString();
         
-        System.out.println("");
-        for (int i = 0; i < instance3.getBitCount(); i++) {
-            if (instance3.getBit(i)) {
-                System.out.print("1");
-            } else {
-                System.out.print("0");
-            }
-        }
-        System.out.println("");
+        
         
         assertEquals(exp3, res3);
         int exp4 = 24929;

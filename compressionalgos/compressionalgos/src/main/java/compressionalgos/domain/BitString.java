@@ -90,8 +90,8 @@ public class BitString {
      */
     public void addWholeByte(byte bits) {
         // Bit shift by i to move individual bits to rightmost position,
-        // one by one, starting with the leftmost bit. If the examined bit is 1,
-        // the shifted byte will have an odd value, i.e. (bits)mod2 == 1
+        // one by one, starting with the 7th bit from right. If the examined bit is 1,
+        // the shifted byte will have an odd value, i.e. (bits)mod2 != 0
         // -> add(true), and vice versa for 0 bit/even value.
         for (int i = 7; i >= 0; i--) {
             add((((bits & INTMASK) >> i) % 2) != 0);
@@ -286,7 +286,8 @@ public class BitString {
     
     /**
      * Concatenate this BitString with another one. Adds all of the given
-     * BitString to the end of this one.
+     * BitString to the end of this one. Warning: calling string.concatenate(string)
+     * on itself might have unexpected results.
      * @param nextString BitString to be added
      */
     public void concatenate(BitString nextString) {

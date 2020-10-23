@@ -37,11 +37,6 @@ public class HuffNodeTest {
     public void tearDown() {
     }
 
-    @Test
-    public void testSomeMethod() {
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
 
     /**
      * Test of compareTo method, of class HuffNode.
@@ -49,13 +44,13 @@ public class HuffNodeTest {
     @Test
     public void testCompareTo() {
         System.out.println("compareTo");
-        HuffNode node = null;
+        HuffNode node = new HuffNode();
+        node.freq = 1;
         HuffNode instance = new HuffNode();
-        int expResult = 0;
+        instance.freq = -1;
+        int expResult = -1;
         int result = instance.compareTo(node);
         assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
     
 }

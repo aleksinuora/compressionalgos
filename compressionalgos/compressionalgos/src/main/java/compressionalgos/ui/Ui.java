@@ -14,9 +14,9 @@ import java.util.*;
 public class Ui {
     // for testing purposes
     // feel free to change the file paths --
-    static String testSource = "src/main/java/testing/Latin-Lipsum.txt";
-    static String testDest = "src/main/java/testing/testFileOut";
-    static String testDecDest = "src/main/java/testing/testFileBack";
+    static String testSource = "src/main/java/compressionalgos/testing/smallerSample.txt";
+    static String testDest = "src/main/java/compressionalgos/testing/testFileOut";
+    static String testDecDest = "src/main/java/compressionalgos/testing/testFileBack";
     private boolean full;
     // -- for testing purposes
     
@@ -64,10 +64,12 @@ public class Ui {
         // Set full to false in Main if you want to skip the Ui and use hard coded
         // values for testing etc.
         if (!full) {
-            logic.runAlgo("9");
-//            logic.setSource(testDest + ".lzw");
-//            logic.setOutput(testDecDest);
-//            logic.runAlgo("4");
+            logic.setSource(testSource);
+            logic.setOutput(testDest);
+            logic.runAlgo("3");
+            logic.setSource(testDest + ".lzw");
+            logic.setOutput(testDecDest);
+            logic.runAlgo("4");
         }
     }
 }

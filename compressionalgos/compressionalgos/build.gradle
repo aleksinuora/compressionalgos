@@ -1,30 +1,62 @@
-apply plugin: 'java'
-apply plugin: 'jacoco'
-apply plugin: 'application'
-apply plugin: 'checkstyle'
+plugins {
+    id 'java'
+
+    id 'application'
+
+    id 'jacoco'
+
+    id 'checkstyle'
+}
 
 
-mainClassName = 'compressionalgos.Main'
+jacoco {
+    toolVersion = "0.8.3"
+}
+
+
+
+checkstyle {
+    toolVersion '8.17';    
+}
 
 repositories {
     jcenter()
 }
 
 dependencies {
-    testImplementation     'junit:junit:4.13'
-    runtime fileTree(dir: 'libs', include: '*.jar')
+
+    // Use JUnit test framework
+    testImplementation 'junit:junit:4.12'
 }
 
+// Define the main class for the application
+mainClassName = 'compressionalgos.Main'
+
 jacocoTestReport {
-	reports {
-		xml.enabled = true
-		html.enabled = true
-	}
+    reports {
+        xml.enabled = true
+        html.enabled = true
+    }
 }
+
 
 run {
     standardInput = System.in
     standardOutput = System.out
 }
 
+
+checkstyleMain {
+    source = fileTree('.') {
+        excludes = ['.*/**', 'gradle*', 'build/**', '*.iml', '*.log', '**/*.jar', '*.txt']
+    }
+}
+
+
 check.dependsOn jacocoTestReport
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'compressionalgos.Main'
+    }
+}

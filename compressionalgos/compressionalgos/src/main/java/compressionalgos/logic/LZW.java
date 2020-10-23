@@ -16,7 +16,7 @@ import compressionalgos.utility.*;
  * @author aleksi
  */
 public class LZW {
-    private final static boolean debug = true;
+    private final static boolean debug = false;
     private final static long LONGMASK = 0xFFFFFFFFL;
     private final StringTools stringTools = new StringTools();
     private final IntTools intTools = new IntTools();
@@ -96,7 +96,6 @@ public class LZW {
             if (nextCode != Integer.MAX_VALUE) {
                 buffer.clear();
                 buffer.addInt(nextCode, byteSize);
-                continue;
             } else {
                 // Mark the next byte. 0 for 8-bit byte (raw value), 
                 // 1 for n-bit coded byte.
@@ -105,37 +104,42 @@ public class LZW {
                 } else {
                     output.add(true);
                 }
-                if (dictionaryIndex < 32768) {
-                    dictionary.add(nextString, dictionaryIndex++);
-                }
-                // Increment code word byte size if necessary.
+                output.concatenate(buffer);                
+                // Increment code word byte size if necessary. Max byteSize == 15.
                 if (intTools.getBitCount(dictionaryIndex) 
-                        < intTools.getBitCount(dictionaryIndex + 1) && byteSize < 15) {
+                        < intTools.getBitCount(dictionaryIndex + 1) && (byteSize < 15)) {
                     // Output n 1's to mark a byte size increase, where n
                     // is the old byteSize. Skip the last byte of the n-bit range
                     // to avoid collisions between dictionary keys and byte size
                     // markers. I.e., the last 9-bit dictionaryIndex is 510,
                     // the next one will be 512 (10 bits) and so on.
-                    for (int j = 0; j < byteSize; j++) {
+                    // The increment code also needs to be marked as a code by
+                    // a prepended 1, so let's write (byteSize + 1) * (1).
+                    for (int j = 0; j < byteSize + 1; j++) {
+                        
+                        if (debug) {
+                            System.out.print("1");
+                        }
+                        
                         output.add(true);
                     }
                     dictionaryIndex++;
                     byteSize++;
                     
-//                    if (debug) {
-//                        System.out.println("byte size increased, code was: " + nextCode);
-//                    }
+                    if (debug) {
+                        System.out.println("\nbyte size increased, next index: " + dictionaryIndex + " new byteSize: " + byteSize);
+                    }
                     
-                }               
-                output.concatenate(buffer);
-                
+                }                               
 //                if (debug)
 //                    {
 //                    System.out.println("output: " + (buffer.getInt()) 
 //                            + ", byte size: " + buffer.getBitCount() 
 //                            + ", dictionary index: " + dictionaryIndex);
 //                }
-                
+                if (intTools.getBitCount(dictionaryIndex + 1) < 16) {
+                    dictionary.add(nextString, dictionaryIndex++);
+                }
                 buffer.clear();
                 buffer.addWholeByte(bytes[i]);
             }
@@ -150,7 +154,11 @@ public class LZW {
         output.concatenate(buffer);
         output.pad();
         padBits = output.getPadBits();
-        output.addWholeByte((byte)padBits);
+        output.addWholeByte(padBits);
+        
+        if (debug) {
+            System.out.println("Final dI after comp: " + dictionaryIndex);
+        }
     }
 /*
 #########################   
@@ -220,6 +228,11 @@ public class LZW {
         // bits are 0-7 padded zeroes. The last viable data byte is 1 + 8 bits
         // long at the least. 
         while (bitIndex < input.getBitCount() - 16 - padBits) {       
+            // Check dictionaryIndex. If it's at maximum value for it's current
+            // byteSize range, skip to the next value. This is done to avoid
+            // indexes with all 1's. The actual check works by comparing the
+            // bit count of the NEXT value to byteSize; if it's larger, the 
+            // previous value must be all 1's.
             // Read the type byte type bit.
             // If the next bit is 0, the following byte is a raw 8-bit byte
             // -> read the next 8 bits.
@@ -230,61 +243,84 @@ public class LZW {
                 bitIndex += 8;
             } else {
                 nextCode.concatenate(input.getBits(bitIndex, byteSize));
+                bitIndex += byteSize;
                 // 1. Check for byte size increment code ([byteSize] long 
                 //  series of 1-bits).
-                // 2. If there's a byte size increment, clear nextCode and read
-                // the real data byte into it. It will always be a code word
-                // after a byte size increment.
+                // 2. If there's a byte size increment, clear nextCode and continue.
                 if (increaseByteSize(nextCode)) {
+                    
+                    if (debug) {
+                        System.out.println("\nnC: " + nextCode.bitsToString() + "Byte size increased \n");
+                    }
+                    
                     bitIndex += byteSize;
-                    byteSize++;
+                    if (byteSize < 15) {
+                        byteSize++;
+                    }
                     nextCode.clear();
-                    nextCode.concatenate(input.getBits(bitIndex, byteSize));
+                    dictionaryIndex++;
+                    continue;
+//                    nextCode.concatenate(input.getBits(bitIndex, byteSize));
                 }
-                bitIndex += byteSize;
-            }
-            nextString.concatenate(dictionary.getString(nextCode.getInt()));
-            if (nextString.getInt() == Integer.MAX_VALUE) {
-                // NO ENTRY FOR INPUT EXCEPTION COMES HERE
+            }            
+            if (dictionary.getValue(nextCode.getInt()) == Integer.MAX_VALUE) {
+                // EXCEPTION: NEXT INPUT IS A KEY BUT HAS NO DICTIONARY ENTRY
                 // 1. Concatenate the last byte from the latest dictionary entry 
                 //  to buffer. The dictionary returns an int value but using 
-                //  the addByte method and casting the dictionary value as byte
+                //  the addWholeByte method
                 //  ensures that only the last 8 bits are added to buffer.
                 // 2. Add this new value to the dictionary.
                 // 3. Output the string derived from the new value, 
                 //  clean up and continue.
-                dictionaryIndex--;
-                
-//                System.out.println(buffer.getInt() + ";" + buffer.getBitCount() + " bits: " + buffer.bitsToString());
-                buffer.addWholeByte((dictionary.getString(buffer.getInt())).getInt());
-                
-//                System.out.println("dictionary value: " + dictionary.getValue(dictionaryIndex) + ", index: " + dictionaryIndex);
-//                
-//                System.out.println("bits now: " + buffer.bitsToString());
-//                System.out.println("int: " + buffer.getInt() + ", bytes: " + buffer.bytesToString() + "" + buffer.getBitCount());
-                
+                // But first: if current dictionaryIndex is at maximum value for
+                // curent byteSize range (i.e.: n ones where n is byteSize), 
+                // roll back to previous index.
+                if (intTools.getBitCount(dictionaryIndex + 1) >= byteSize) {
+                    dictionaryIndex--;
+                }
+                // If the previous index is < 256, no entries have been added
+                // -> the previous value we are looking for can only be a raw 
+                // byte. Which one? The last one that was written to output,
+                // which is currently in the buffer. Otherwise, add the last
+                // byte from the last dictionary entry value to buffer.
+                if (dictionaryIndex - 1 < 256) {
+                    buffer.addWholeByte(buffer.getInt());
+                } else {
+                    buffer.addWholeByte((dictionary.getValue(dictionaryIndex - 1)));
+                }                
                 dictionary.add(nextCode.getInt(), buffer.getInt());
-                dictionaryIndex += 2;
+                dictionaryIndex++;
                 buffer.clear();
                 buffer.concatenate(nextCode);
                 nextCode.clear();
                 output.concatenate(dictionary.getString(buffer.getInt()));
                 
                 if (debug) {
-                    System.out.println("Exception, buffer: " 
+                    System.out.println("\nException, buffer: " 
                             + buffer.getInt()); 
-                }               
-                
-                nextString.clear();
+                }                               
                 continue;
             }
-            buffer.addWholeByte((byte)(nextString.getInt()));
+            // If nextCode is a code word and no exceptions occurred, write the
+            // whole raw byte string encoded by nextCode to nextString. The
+            // first byte of nextString then gets concatenated to buffer. Buffer
+            // should now have the value from the previous iteration + first
+            // byte from the next output string.
+            //  If the dictionary has a key for this buffered byte pair, write out 
+            // nextString. Otherwise, add buffer value to dictionary.
+            nextString.concatenate(dictionary.getString(nextCode.getInt()));
+            buffer.concatenate(nextString.getBits(0, 8));
             if (dictionary.getKey(buffer.getInt()) != Integer.MAX_VALUE) {                
-                output.concatenate(dictionary.getString(nextCode.getInt()));
+                output.concatenate(nextString);
                 buffer.clear();
                 buffer.concatenate(nextCode);
             } else {
                 dictionary.add(dictionaryIndex++, buffer.getInt());
+                
+                if (debug) {
+                    System.out.println((dictionaryIndex - 1) + ":" + buffer.bitsToString() + " added to dictionary");
+                }
+                
                 output.concatenate(nextString);
                 buffer.clear();
                 buffer.concatenate(nextCode);
@@ -301,16 +337,16 @@ public class LZW {
         }
         
         if (debug) {
-            int key = 278;
+            int key = 443;
+            System.out.println("Dictionary entry for " + key + ": " + dictionary.getValue(key) + ":" + Integer.toBinaryString(dictionary.getValue(key)));
             System.out.println("Dictionary value for " + key + ": " + dictionary.getString(key).bitsToString());
+            int value = 0b0100010101110100;
+            System.out.println("Dictionary key for value " + value + ": " + dictionary.getKey(value));
         }
     }
 
     private boolean increaseByteSize(BitString code) {
-        if (byteSize > 14) {
-            return false;
-        } 
-        for (int i = 0; i < byteSize; i++) {
+        for (int i = 0; i < code.getBitCount(); i++) {
             if (!code.getBit(i)) {
                 return false;
             }

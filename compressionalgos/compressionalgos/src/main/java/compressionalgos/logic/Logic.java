@@ -13,7 +13,7 @@ import compressionalgos.utility.StringTools;
  */
 public class Logic {
     private final StringTools stringTools = new StringTools();
-    private String testPath = "src/main/java/testing/";
+    private String testPath = "src/main/java/compressionalgos/testing/";
     private String source;
     private String output;
     private Io io;
