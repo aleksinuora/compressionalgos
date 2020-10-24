@@ -29,7 +29,7 @@ C D
 Marking right turns as 0 and left turns as 1, we would get the following code table:
 
 | Byte | Code |
----------------
+|------|------|
 | A    | 0    |
 | B    | 10   |
 | C    | 111  |
