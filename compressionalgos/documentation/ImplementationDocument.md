@@ -11,11 +11,15 @@ r: root
 i: internal node
 
 r
+
 |\
 | A
+
 i
 |\
+
 i B
+
 |\
 C D
 
