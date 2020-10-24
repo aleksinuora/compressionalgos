@@ -85,5 +85,5 @@ The LZW algorithm currently doesn't detect null bytes correctly, limiting it's u
 
 # Performance
 
-Performance tests were run with the test files found in "/testing" folder. These can easily be repeated from within the program. Compiled results in chart form can be found [here]
-(https://github.com/aleksinuora/compressionalgos/tree/master/compressionalgos/documentation/PerformanceTestCharts).
+Performance tests were run with the test files found in "/testing" folder. These can easily be repeated from within the program. Compiled results in chart form can be found here:
+https://github.com/aleksinuora/compressionalgos/tree/master/compressionalgos/documentation/PerformanceTestCharts.
