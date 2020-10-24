@@ -9,4 +9,7 @@ A project for the Data Structures and Algorithms course at the University of Hel
 ### Usage
 * Download the [.jar](https://github.com/aleksinuora/compressionalgos/blob/master/compressionalgos/compressionalgos/compressionalgos.jar) file.
 * Run from command line with command 'java -jar compressionalgos.jar -f'.
-* If you want to run the performance tests: make sure to also download the [/testing-folder](https://github.com/aleksinuora/compressionalgos/tree/master/compressionalgos/compressionalgos/testing) and place it in the same directory with the .jar-file. The folder contains files used by the testing methods.
+* If you want to run the performance tests: 
+	1. make sure to also download the [/testing-folder](https://github.com/aleksinuora/compressionalgos/blob/master/compressionalgos/compressionalgos/testing.zip),
+	2. unzip it and
+	3. place it in the same directory with the .jar-file. The folder contains files used by the 		testing methods.
