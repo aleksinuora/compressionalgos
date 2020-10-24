@@ -252,7 +252,7 @@ public class BitStringTest {
         BitString instance3 = new BitString();
         instance3.addWholeByte(test3);
         instance3.addWholeByte(test3);
-        String exp3 = "0:97 1:97 ";
+        String exp3 = "|0:97|1:97|";
         String res3 = instance3.bytesToString();
         
         
@@ -272,6 +272,28 @@ public class BitStringTest {
         byte bits = 0b1;
         BitString instance = new BitString();
         instance.addWholeByte((byte)bits);
+        int res = 0;
+        for (int i = 0; i < 7; i++) {
+            if (!instance.getBit(i)) {
+                res++;
+            }
+        }
+        if (instance.getLastBit()) {
+            res++;
+        }
+        int exp = 8;
+        assertEquals(exp, res);
+    }
+    
+    /**
+     * Test of addWholeByte method, of class BitString.
+     */
+    @Test
+    public void testAddWholeByte_int() {
+        System.out.println("addWholeByte_3");
+        int bits = 0b1;
+        BitString instance = new BitString();
+        instance.addWholeByte(bits);
         int res = 0;
         for (int i = 0; i < 7; i++) {
             if (!instance.getBit(i)) {
@@ -537,5 +559,32 @@ public class BitStringTest {
         byte result = instance.getArray(false)[1];
         byte expResult = (byte)-128;
         assertEquals("Expected " + expResult + ", got " + result, expResult, result);
-    }    
+    }
+
+    /**
+     * Test of bytesToString method, of class BitString.
+     */
+    @Test
+    public void testBytesToString() {
+        System.out.println("bytesToString");
+        BitString instance = new BitString();
+        int test = 0b1010101010101010;
+        instance.addInt(test);
+        String res = instance.bytesToString();
+        String exp = "|0:-86|1:-86|";
+        assertEquals(exp, res);
+    }
+    /**
+     * Test of bitsToString method, of class BitString.
+     */
+    @Test
+    public void testBitsToString() {
+        System.out.println("bitsToString");
+        BitString instance = new BitString();
+        int test = 0b1010101010101010;
+        instance.addInt(test);
+        String res = instance.bitsToString();
+        String exp = "|10101010|10101010|";
+        assertEquals(exp, res);
+    }
 }

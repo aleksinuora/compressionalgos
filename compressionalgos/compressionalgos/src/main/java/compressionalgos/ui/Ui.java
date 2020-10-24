@@ -14,7 +14,7 @@ import java.util.*;
 public class Ui {
     // for testing purposes
     // feel free to change the file paths --
-    static String testSource = "testing/alice29.txt";
+    static String testSource = "testing/simpleTextFile.txt";
     static String testDest = "testing/testFileOut";
     static String testDecDest = "testing/testFileBack";
     private boolean full;
@@ -40,28 +40,38 @@ public class Ui {
      */
     public void launch() {
         // The scanner class seems to sometimes interact badly with gradle and 
-        // NetBeans. 
+        // NetBeans.
+        
         if (full) {
-            System.out.println("Available algorithms: (1) Huffman compress"
-                    + "\n (2) Huffman decompress" 
-                    + "\n (3) LZW compress" 
-                    + "\n (4) LWZ decompress" 
-                    + "\n (9) Run performance tests"
-                    + "\n (0) To exit program");
-            String algoChoice = scanner.nextLine();
-            if (algoChoice.equals("9")) {
-                System.out.println("\nRunning performance tests");
-                logic.runAlgo(algoChoice);
-            } else if (algoChoice.equals("0")) {
-                System.out.println("Exiting.");
-            } else {
-                System.out.println("Source path: ");
-                String source = scanner.nextLine();
-                logic.setSource(source);
-                System.out.println("Output path: ");
-                String output = scanner.nextLine();
-                logic.setOutput(output);
-                logic.runAlgo(algoChoice);
+            while(true) {
+                System.out.println("\nAvailable commands:\n (1) Huffman compress"
+                        + "\n (2) Huffman decompress" 
+                        + "\n (3) LZW compress" 
+                        + "\n (4) LWZ decompress" 
+                        + "\n (7) Huffman test"
+                        + "\n (8) LZW test"
+                        + "\n (9) Run performance tests"
+                        + "\n (0) To exit program"
+                        + "\n(Note: before running tests, make sure the "
+                        + "'/testing/'-directory with all the test files is "
+                        + "properly located in the same directory as "
+                        + "compressionalgos.jar.)");
+                String algoChoice = scanner.nextLine();
+                if (algoChoice.equals("9") || algoChoice.equals("8") || algoChoice.equals("7")) {
+                    System.out.println("\nRunning tests");
+                    logic.runAlgo(algoChoice);
+                } else if (algoChoice.equals("0")) {
+                    System.out.println("Exiting.");
+                    break;
+                } else {
+                    System.out.println("Source path: ");
+                    String source = scanner.nextLine();
+                    logic.setSource(source);
+                    System.out.println("Output path: ");
+                    String output = scanner.nextLine();
+                    logic.setOutput(output);
+                    logic.runAlgo(algoChoice);
+                }
             }
         }
         // Set full to false in Main if you want to skip the Ui and use hard coded

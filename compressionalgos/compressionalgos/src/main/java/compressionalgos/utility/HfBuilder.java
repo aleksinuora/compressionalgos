@@ -12,6 +12,8 @@ import compressionalgos.domain.BitString;
  * @author aleksi
  */
 public class HfBuilder {
+    private static final boolean useSysCopy = false;
+    private final ArrayCopy arrayCopy = new ArrayCopy();
     private final StringTools stringTools = new StringTools();
     private String source;
     private int byteSize;
@@ -38,10 +40,18 @@ public class HfBuilder {
         this.source = source;
         this.byteSize = byteSize;
         this.tree = new byte[tree.length()];
-        System.arraycopy(tree.getArray(false), 0, this.tree, 0, tree.length());
+        if (useSysCopy) {
+            System.arraycopy(tree.getArray(false), 0, this.tree, 0, tree.length());
+        } else {
+            arrayCopy.copyByteArray(tree.getArray(false), 0, this.tree, 0, tree.length());
+        }
         this.treePadding = tree.getPadBits();
         this.code = new byte[code.length()];
-        System.arraycopy(code.getArray(false), 0, this.code, 0, code.length());
+        if (useSysCopy) {
+            System.arraycopy(code.getArray(false), 0, this.code, 0, code.length());
+        } else {
+            arrayCopy.copyByteArray(code.getArray(false), 0, this.code, 0, code.length());
+        }
     }
     
     /**
@@ -56,8 +66,13 @@ public class HfBuilder {
     
     private void makeFile() {
         makeHeader();
-        System.arraycopy(tree, 0, file, 10, tree.length);
-        System.arraycopy(code, 0, file, 10 + tree.length, code.length);
+        if (useSysCopy) {
+            System.arraycopy(tree, 0, file, 10, tree.length);
+            System.arraycopy(code, 0, file, 10 + tree.length, code.length);
+        } else {
+            arrayCopy.copyByteArray(tree, 0, file, 10, tree.length);
+            arrayCopy.copyByteArray(code, 0, file, 10 + tree.length, code.length);
+        }
     }
     
     private void makeHeader() {
@@ -68,7 +83,11 @@ public class HfBuilder {
         String[] end = stringTools.split(source, '.', false);
         String fileType = end[end.length-1];
         byte[] fileTypeBytes = fileType.getBytes();
-        System.arraycopy(fileTypeBytes, 0, file, 2, fileTypeBytes.length);
+        if (useSysCopy) {
+            System.arraycopy(fileTypeBytes, 0, file, 2, fileTypeBytes.length);
+        } else {
+            arrayCopy.copyByteArray(fileTypeBytes, 0, file, 2, fileTypeBytes.length);
+        }
         // convert byteSize integer to byte array and append to bin array:
         byte[] b = new byte[]{
             (byte)(byteSize >>> 24),
@@ -77,7 +96,12 @@ public class HfBuilder {
             (byte)byteSize
         };
         // append number of tree binary padding to bin array:
-        System.arraycopy(b, 0, file, 5, 4);
+        if (useSysCopy) {
+            System.arraycopy(b, 0, file, 5, 4);
+        } else {
+            arrayCopy.copyByteArray(b, 0, file, 5, 4);
+        }
         file[9] = (byte)this.treePadding;
+        
     }
 }

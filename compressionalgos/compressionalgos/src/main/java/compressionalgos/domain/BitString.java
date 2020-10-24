@@ -5,14 +5,17 @@
  */
 package compressionalgos.domain;
 import compressionalgos.utility.IntTools;
+import compressionalgos.utility.ArrayCopy;
 
 /**
  *
  * @author aleksi
  */
 public class BitString {
+    private static final boolean useSysCopy = false;
     private static final long LONGMASK = 0xFFFFFFFFL;
     private static final short INTMASK = 0xFF;
+    private final ArrayCopy arrayCopy = new ArrayCopy();
     private final IntTools intTools = new IntTools();
     private int capacity;
     private byte[] byteArray;
@@ -330,7 +333,11 @@ public class BitString {
             capacity = 8;
         }
         byte[] biggerArray = new byte[capacity*2];
-        System.arraycopy(byteArray, 0, biggerArray, 0, capacity);
+        if (useSysCopy) {
+            System.arraycopy(byteArray, 0, biggerArray, 0, capacity);
+        } else {
+            arrayCopy.copyByteArray(byteArray, 0, biggerArray, 0, capacity);
+        }
         byteArray = biggerArray;
         capacity *= 2;
     }
@@ -356,6 +363,7 @@ public class BitString {
      * Pad the last byte in this BitString with trailing zeroes.
      */
     public void pad() {
+        this.padBits = 0;
         while(bitCount % 8 > 0) {
             add(false);
             this.padBits++;
@@ -370,16 +378,25 @@ public class BitString {
         return this.padBits;
     }
     
+    /**
+     * Write the byte array to a string, in "|[index]:[value]|[index]:[value]|...|"
+     * format.
+     * @return byte array in string form
+     */
     public String bytesToString() {
-        String string = "";
+        String string = "|";
         for (int i = 0; i < bitCount / 8; i++) {
-            string = string + i + ":" + (byteArray[i / 8] + " ");
+            string = string + i + ":" + (byteArray[i / 8] + "|");
         }
         return string;
     }
     
+    /**
+     * Write all the bits to a string, in [|xxxxxxxx|xxxxxxxx|...|] format.
+     * @return all bits in a string
+     */
     public String bitsToString() {
-        String string = "";
+        String string = "|";
         for (long i = 1; i <= bitCount; i++) {
             if (this.getBit(i - 1)) {
                 string = string + "1";
@@ -387,7 +404,7 @@ public class BitString {
                 string = string + "0";
             }
             if (i % 8 == 0 && i > 0) {
-                string = string + ":";
+                string = string + "|";
             }
         }
         return string;

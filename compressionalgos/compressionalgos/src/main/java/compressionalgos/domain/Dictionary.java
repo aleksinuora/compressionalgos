@@ -40,7 +40,7 @@ public class Dictionary {
     public void add(int key, int value) {
         // Storing 8-bit and below key:value pairs would have no benefit. Instead,
         // the value for short strings is assumed to be the same as the key.
-        if (intTools.getBitCount(key) < 9) {
+        if ((intTools.getBitCount(key) < 9) && (value > 0) && (key > 0)) {
             return;
         }
         this.root = addNode(root, key, value);
@@ -60,13 +60,10 @@ public class Dictionary {
             // Note: in this implementation of LZW, codewords are at most 15 bits.
             // Therefore, a [>8-bit code]-value on it's own won't get mistaken
             // for a [code]+[byte] pair.
-            if (intTools.getBitCount(value) > 16) {
-//                System.out.println("new node: " + key + ", value: " + value + ", value pair: " + (value >> 8) + ":" + (value & INTMASK));
+//            if (intTools.getBitCount(value) > 16) {
                 return new BNode(key, value, searchNode(root, (int)((value & LONGMASK) >> 8)));
-
-            }
-//            System.out.println("new node: " + key + ", value: " + value + ", value pair: " + (value >> 8) + ":" + (value & INTMASK));
-            return new BNode(key, value);
+//            }
+//            return new BNode(key, value);
         }
         // Don't add a new node if the key already exists in the tree.
         if (key == node.key) {
@@ -170,6 +167,10 @@ public class Dictionary {
         if (node == null) {
             return string;
         }
+        if (node.value == 0) {
+            string.addWholeByte(0);
+            return string;
+        }
         string.concatenate(buildString(new BitString(2), node.next));
         // The last node in the linked list will have a 0-16 bit value, i.e.
         // a string of two raw bytes. Check if this node is the last. If yes,
@@ -189,7 +190,7 @@ public class Dictionary {
      */
     public int getValue(int key) {
         // Check for small strings.
-        if (intTools.getBitCount(key) < 9) {
+        if (intTools.getBitCount(key) < 9 && key > 0) {
             return key;
         }
         BNode node = searchNode(root, key);
@@ -222,6 +223,9 @@ public class Dictionary {
      * @return key associated with the key as int, or MIN_VALUE if absent
      */
     public int getKey(int value) {
+        if (value == 0) {
+            return 256;
+        }
         return keyset.getValue(value);
     }
 }

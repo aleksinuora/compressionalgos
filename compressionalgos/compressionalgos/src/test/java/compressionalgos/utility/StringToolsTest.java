@@ -48,8 +48,7 @@ public class StringToolsTest {
         System.out.println("split");
         String string = "as.df.txt";
         char marker = '.';
-        boolean includeMarkers = false;
-        String[] res = stringTools.split(string, marker, includeMarkers);
+        String[] res = stringTools.split(string, marker, false);
         String[] exp = new String[]{
             "as",
             "df",
@@ -64,4 +63,15 @@ public class StringToolsTest {
         
     }
     
+    /**
+     * Test of getSuffix method, of class StringTools.
+     */
+    @Test
+    public void testGetSuffix() {
+        System.out.println("getSuffix");
+        String string = "string.exe";
+        String res = stringTools.getSuffix(string);
+        String exp = ".exe";
+        assertEquals(exp, res);
+    }
 }

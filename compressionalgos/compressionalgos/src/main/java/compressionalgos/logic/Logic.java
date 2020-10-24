@@ -48,8 +48,15 @@ public class Logic {
             case "4":
                 LZWDecompress();
                 return true;
+            case "7":
+                HuffmanTest();
+                return true;
+            case "8":
+                LZWTest();
+                return true;
             case "9":
                 performanceTesting();
+                return true;
         }
         
         return true;
@@ -91,6 +98,18 @@ public class Logic {
         printResults(test1);
         System.out.println("\nHuffman compilation");
         printResults(test2);
+    }
+    
+    private void LZWTest() {
+        long[][] test;
+        test = testAlgorithm("LZW");
+        printResults(test);
+    }
+    
+    private void HuffmanTest() {
+        long[][] test;
+        test = testAlgorithm("Huffman");
+        printResults(test);
     }
     
     private long[][] testAlgorithm(String algorithm) {

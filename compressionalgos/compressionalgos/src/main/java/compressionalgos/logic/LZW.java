@@ -18,6 +18,7 @@ import compressionalgos.utility.*;
 public class LZW {
     private final static boolean debug1 = false;
     private final static boolean debug2 = false;
+    private final static boolean debug3 = false;
     private final static long LONGMASK = 0xFFFFFFFFL;
     private final StringTools stringTools = new StringTools();
     private final IntTools intTools = new IntTools();
@@ -80,16 +81,19 @@ public class LZW {
     private void buildCode() {
         BitString buffer = new BitString(2);
         buffer.addWholeByte(bytes[0]);
-        int dictionaryIndex = 256;
-        int nextString;
+        int dictionaryIndex = 257;
+        dictionary.add(256, 0);
+        BitString nextString = new BitString();
         int nextCode;
         // Iterate through the source byte array.
         for (int i = 1; i < bytes.length; i++) {
             // Set the next string to [previous string] + [next byte].
-            nextString = (buffer.getInt() << 8) + (bytes[i] & 0xFF);
+            nextString.clear();
+            nextString.concatenate(buffer);
+            nextString.addWholeByte(bytes[i]);
             // Search the dictionary for a code associated with the next string.
-            // All 8-bit strings are their own codes.
-            nextCode = dictionary.getValue(nextString);
+            // All 8-bit strings are their own codes, except for 0, which is 256.
+            nextCode = dictionary.getKey(nextString.getInt());
             // If a code already exists for the given string, set the current
             // string to the [code found]+[next byte] pair and continue. If not,
             // add a dictionary entry for the new string and set the string
@@ -127,19 +131,26 @@ public class LZW {
                     dictionaryIndex++;
                     byteSize++;
                     
-                    if (debug2) {
+                    if (debug3) {
                         System.out.println("\nbyte size increased, next index: " + dictionaryIndex + " new byteSize: " + byteSize);
                     }
                     
                 }                               
-//                if (debug)
-//                    {
-//                    System.out.println("output: " + (buffer.getInt()) 
-//                            + ", byte size: " + buffer.getBitCount() 
-//                            + ", dictionary index: " + dictionaryIndex);
-//                }
+                if (debug3)
+                    {
+                    System.out.println("output: " + (buffer.bitsToString()) 
+                            + ", byte size: " + buffer.getBitCount() 
+                            + ", dictionary index: " + dictionaryIndex);
+                }
                 if (intTools.getBitCount(dictionaryIndex + 1) < 16) {
-                    dictionary.add(nextString, dictionaryIndex++);
+                    
+                    if (debug3) {
+                        System.out.println(dictionaryIndex + ":" 
+                                + nextString.bitsToString() + " (" 
+                                + nextString.getInt() + ")" + " added to dictionary");
+                    }
+                    
+                    dictionary.add(dictionaryIndex++, nextString.getInt());
                 }
                 buffer.clear();
                 buffer.addWholeByte(bytes[i]);
@@ -157,8 +168,14 @@ public class LZW {
         padBits = output.getPadBits();
         output.addWholeByte(padBits);
         
-        if (debug2) {
+        
+        if (debug3) {
             System.out.println("Final dI after comp: " + dictionaryIndex);
+            int key = 262;
+            System.out.println("Dictionary entry for " + key + " ([code]+[last byte]): " + dictionary.getValue(key) + ":" + Integer.toBinaryString(dictionary.getValue(key)));
+            System.out.println("Dictionary value for " + key + "([full bytes]): " + dictionary.getString(key).bitsToString());
+            int value = 65536;
+            System.out.println("Dictionary key for value " + value + ": " + dictionary.getKey(value));
         }
     }
 /*
@@ -218,7 +235,8 @@ public class LZW {
         BitString nextCode = new BitString(2);
         BitString nextString = new BitString(2);
         BitString temp;
-        int dictionaryIndex = 256;
+        int dictionaryIndex = 257;
+        dictionary.add(256, 0);
         long bitIndex = 6 * 8 + 1;
         buffer.concatenate(input.getBits(bitIndex, 8));
         bitIndex += 8;
@@ -283,12 +301,12 @@ public class LZW {
                         System.out.println("dictionary rollback at " + dictionaryIndex);
                     }
                 }
-                // If the previous index is < 256, no entries have been added
+                // If the previous index is < 257, no entries have been added
                 // -> the previous value we are looking for can only be a raw 
                 // byte. Which one? The last one that was written to output,
                 // which is currently in the buffer. Otherwise, add the last
                 // byte from the last dictionary entry value to buffer.
-                if (dictionaryIndex - 1 < 256) {
+                if (dictionaryIndex - 1 < 257) {
                     buffer.addWholeByte(buffer.getInt());
                 } else {
                     buffer.addWholeByte((dictionary.getValue(dictionaryIndex - 1)));
@@ -348,12 +366,12 @@ public class LZW {
             nextString.clear();
         }
         
-        if (debug2) {
+        if (debug3) {
             System.out.println("Final dI after decomp: " + dictionaryIndex);
-            int key = 32766;
+            int key = 256;
             System.out.println("Dictionary entry for " + key + " ([code]+[last byte]): " + dictionary.getValue(key) + ":" + Integer.toBinaryString(dictionary.getValue(key)));
             System.out.println("Dictionary value for " + key + "([full bytes]): " + dictionary.getString(key).bitsToString());
-            int value = 0b0100010101110100;
+            int value = 0;
             System.out.println("Dictionary key for value " + value + ": " + dictionary.getKey(value));
         }
     }

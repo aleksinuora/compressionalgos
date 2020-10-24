@@ -70,5 +70,28 @@ public class IntToolsTest {
         int res = instance.max(a, b);
         int exp = 2;
         assertEquals(exp, res);
+        int c = 1;
+        int d = 0;
+        int res2 = instance.max(c, d);
+        int exp2 = 1;
+        assertEquals(exp2, res2);
+    }
+    
+    /**
+     * Test of min method, of class IntTools.
+     */
+    @Test
+    public void testMin() {
+        System.out.println("min");
+        int a = -2;
+        int b = 2;
+        int res = instance.min(a, b);
+        int exp = -2;
+        assertEquals(exp, res);
+        int c = 1;
+        int d = 0;
+        int res2 = instance.min(c, d);
+        int exp2 = 0;
+        assertEquals(exp2, res2);
     }
 }

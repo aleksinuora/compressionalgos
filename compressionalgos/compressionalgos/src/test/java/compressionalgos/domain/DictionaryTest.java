@@ -26,9 +26,9 @@ public class DictionaryTest {
     
     @BeforeClass
     public static void setUpClass() {
-        for (int i = 0; i < largeSize; i++) {
-            largeDictionary1.add(0b11111111 + i, 255 + i);
-            largeDictionary2.add(255 + i, 0b11111111 + i);
+        for (int i = 1; i < largeSize; i++) {
+            largeDictionary1.add(i, 255 + i);
+            largeDictionary2.add(255 + i, i);
         }
     }
     
@@ -51,13 +51,13 @@ public class DictionaryTest {
     public void testAdd() {
         System.out.println("add");
         Dictionary instance = new Dictionary();
-        int exp = 10000;
+        int exp = 99999;
         for (int i = 0; i < exp; i++) {
-            instance.add(i * 256, i);
+            instance.add(i + 256, i);
         }
         int res = 0;
         for (int i = 0; i < exp; i++) {
-            if (instance.getValue(i * 256) == i) {
+            if (instance.getValue(i + 256) == i) {
                 res++;
             }
         }
@@ -85,6 +85,32 @@ public class DictionaryTest {
         int exp2 = 1;
         int res2 = instance.getValue(exp2);
         assertEquals(exp2, res2);
+    }
+
+    /**
+     * Test of getString method, of class Dictionary.
+     */
+    @Test
+    public void testGetString() {
+        System.out.println("getString");
+        Dictionary instance = new Dictionary();
+        int key = 0;
+        instance.add(256, 1);
+        instance.add(257, 0b10000000000000010);
+        int res = instance.getString(257).getInt();
+        int exp = 0b100000010;
+        assertEquals(exp, res);
+    }
+
+    /**
+     * Test of getKey method, of class Dictionary.
+     */
+    @Test
+    public void testGetKey() {
+        System.out.println("getKey");
+        int res = largeDictionary2.getKey(256);
+        int exp = 511;
+        assertEquals(exp, res);
     }
     
     /**
