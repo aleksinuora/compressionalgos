@@ -13,14 +13,17 @@ i: internal node
 r
 
 |\
+
 | A
 
 i
+
 |\
 
 i B
 
 |\
+
 C D
 
 Marking right turns as 0 and left turns as 1, we would get the following code table:
