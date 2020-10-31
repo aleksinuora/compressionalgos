@@ -2,7 +2,7 @@
 
 ## General overview of algorithms
 
-# Huffman coding
+### Huffman coding
 
 The Huffman compression algorithm builds a dictionary in the form of a binary tree, with leaves corresponding to input bytes, and then uses said tree to encode input as a binary string of
 traversal paths. The binary tree is arranged such that the most common bytes have the shortest distances from the root node. For example, an input of "AAABBCD" would result in the following tree:
@@ -37,7 +37,7 @@ Marking right turns as 0 and left turns as 1, we would get the following code ta
 
 The structure of the binary tree is then encoded into the output file. Next, the original file is encoded according to the dictionary and added to the output. When decompressing, the binary tree is first recreated. Then, the encoded paths are used to traverse the tree and rebuild the original file.
 
-# LZW (Lempel-Ziv-Welch) coding
+### LZW (Lempel-Ziv-Welch) coding
 
 The LZW algorithm relies on building a dictionary of repeating byte patterns and representing them with 9+ bit codewords. Initially, all 8 bit bytes are added to the dictionary. Whenever a new substring is encountered in the input, it gets added to the dictionary. Following occurrences of that substring get represented by the given codeword. When decoding, pretty much the same procedure in reverse is used to rebuild the dictionary. Any new codeword must encode a combination of previously encountered bytes.
 
@@ -47,7 +47,7 @@ On the other hand, having a dictionary of all possible substrings would quickly 
 
 ## Particular implementation
 
-# Huffman algorithm
+### Huffman algorithm
 
 Compression:
 1. Read input bytes from file.
@@ -65,7 +65,7 @@ Decompression:
 4. Traverse the tree created in step 2. Again, if the next input bit is a 1, take a left turn, right turn for a 0 and so on. When a leaf node is reached, write out it's value to output and start again until all the input bits are read.
 
 
-# LZW algorithm
+### LZW algorithm
 
 Compression:
 1. Read input bytes from file. Add the first byte to buffer. Initialize a AVL-tree dictionary with all 8 bit values, with keys ranging from 0 to 255. Set the dictionary index to 256. Set current codeword byte size to 9.
@@ -83,7 +83,7 @@ Decompression is pretty much the same procedure as compression, except in revers
 Problems:
 The LZW algorithm currently doesn't detect null bytes correctly, limiting it's usefulness to 8-bit file formats.
 
-# Performance
+## Performance
 
 Performance tests were run with the test files found in "/testing" folder. These can easily be repeated from within the program. Compiled results in chart form can be found here:
 https://github.com/aleksinuora/compressionalgos/tree/master/compressionalgos/documentation/PerformanceTestCharts.
