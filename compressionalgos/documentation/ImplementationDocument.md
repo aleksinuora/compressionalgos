@@ -43,7 +43,7 @@ The LZW algorithm relies on building a dictionary of repeating byte patterns and
 
 The LZW algorithm saves a lot of space by using the input string as it's own de facto dictionary. Comparing it to the Huffman algorithm, there's no need to include a separate encoding tree or dictionary in the compressed file.
 
-On the other hand, having a dictionary of all possible substrings would quickly eat up resources during coding and encoding. Substrings need to be added to the dictionary only as they are encountered and only up to a certain length. Compression efficiency is highly dependent on the maximum length of these substrings and their corresponding codewords. Some implementations use a fixed length of 9+ bits for the codewords, others dynamically alter the bit range as needed. The former approach means that every codeword has a fixed bit size, while the latter saves considerable space by only using as many bits as necessary for a given code.
+On the other hand, having a dictionary of all possible substrings would quickly eat up resources during coding and decoding. Substrings need to be added to the dictionary only as they are encountered and only up to a certain length. Compression efficiency is highly dependent on the maximum length of these substrings and their corresponding codewords. Some implementations use a fixed length of 9+ bits for the codewords, others dynamically alter the bit range as needed. The former approach means that every codeword has a fixed bit size, while the latter saves considerable space by only using as many bits as necessary for a given code.
 
 ## Particular implementation
 
